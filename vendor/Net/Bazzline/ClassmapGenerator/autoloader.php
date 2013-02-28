@@ -39,5 +39,7 @@ function autoloadFromFilesystemWithClassmap($classname)
     }
 }
 
-spl_autoload_register('autoloadFromFilesystemWithClassmap');
+if (file_exists('autoloader_classmap.php')) {
+    spl_autoload_register('autoloadFromFilesystemWithClassmap');
+}
 spl_autoload_register('autoloadFromFilesystem');

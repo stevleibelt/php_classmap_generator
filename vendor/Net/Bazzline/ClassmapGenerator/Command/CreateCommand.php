@@ -5,7 +5,7 @@ namespace Net\Bazzline\ClassmapGenerator\Command;
 use DirectoryIterator;
 use Net\Bazzline\ClassmapGenerator\Filesystem\PhpFileOrDirectoryFilterIterator;
 use Net\Bazzline\ClassmapGenerator\Filesystem\FileAnalyzer;
-use Net\Bazzline\ClassmapGenerator\View\ClassmapFileView;
+use Net\Bazzline\ClassmapGenerator\Filesystem\ClassmapFilewriter;
 use InvalidArgumentException;
 
 /**
@@ -24,35 +24,35 @@ class CreateCommand extends CommandAbstract
     /**
      * @author stev leibelt
      * @since 2013-02-28
-     * @var string 
+     * @var string
      */
     private $basePath;
 
     /**
      * @author stev leibelt
      * @since 2013-02-28
-     * @var string 
+     * @var string
      */
     private $outputPath;
 
     /**
      * @author stev leibelt
      * @since 2013-02-28
-     * @var array 
+     * @var array
      */
     private $whitelistedDirectories;
 
     /**
      * @author stev leibelt
      * @since 2013-02-28
-     * @var array 
+     * @var array
      */
     private $blacklistedDirectories;
 
     /**
      * @authors stev leibelt
      * @since 2013-02-28
-     * @var array 
+     * @var array
      */
     private $classMapContent;
 
@@ -137,9 +137,9 @@ class CreateCommand extends CommandAbstract
      */
     public function execute()
     {
-        $viewData = array();
-        $viewData[] = 'Overwrite if file exists (yes/no): ' . ($this->isForced() ? 'yes' : 'no');
-        $viewData[] = '';
+        $view = $this->getView();
+        $view->addData('Overwrite if file exists (yes/no): ' . ($this->isForced() ? 'yes' : 'no'));
+        $view->addData('');
 
         foreach ($this->whitelistedDirectories as $directory => $directoryPaths) {
             foreach ($directoryPaths as $directoryPath) {
@@ -152,25 +152,30 @@ class CreateCommand extends CommandAbstract
             }
         }
 
-        $view = $this->getView();
-        $view->setData($viewData);
-
-        $view->addData('');
-        foreach ($this->blacklistedDirectories as $directory => $directoryPaths) {
-            foreach ($directoryPaths as $directoryPath) {
-                $view->addData('Ignored directory: ' . $this->basePath . DIRECTORY_SEPARATOR . $directory . DIRECTORY_SEPARATOR . $directoryPath);
+        $classmapFileWriter = new ClassmapFilewriter();
+        $classmapFileWriter->setClassmapFilepath(dirname(__DIR__) . DIRECTORY_SEPARATOR . $this->outputPath);
+        $classmapFileWriter->setFiledata($classmapFileContent);
+        if ($classmapFileWriter->fileExists()) {
+            if ($this->isForced()) {
+                $view->addData(($classmapFileWriter->overwrite()) ? 'classmap written' : 'classmap was not written');
+            } else {
+                $view->addData('Classmapfile exists. Use force to overwrite.');
             }
+        } else {
+            $view->addData(($classmapFileWriter->write()) ? 'classmap written' : 'classmap was not written');
         }
+
         $view->addData('');
         $view->addData('done');
         $view->render();
-
-        $classmapView = new ClassmapFileView();
-        $classmapView->setClassmapFilepath(dirname(__DIR__) . DIRECTORY_SEPARATOR . $this->outputPath);
-        $classmapView->setData($classmapFileContent);
-        $classmapView->render();
     }
 
+    /**
+     * @author stev leibelt
+     * @param string $path
+     * @return array
+     * @since 2013-02-28
+     */
     private function iterateDirectory($path)
     {
         $data = array();

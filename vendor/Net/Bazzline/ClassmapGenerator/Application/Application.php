@@ -23,7 +23,7 @@ class Application implements ApplicationInterface
     /**
      * @author stev leibelt
      * @since 2013-02-27
-     * @var array 
+     * @var array
      */
     private $configuration;
 
@@ -32,9 +32,11 @@ class Application implements ApplicationInterface
      * @param array $configuration
      * @since 2013-02-27
      */
-    private function __construct(array $configuration = array()) 
+    private function __construct(array $configuration = array())
     {
-        date_default_timezone_set('Europe/Berlin');
+        if (date_default_timezone_get() === false) {
+            date_default_timezone_set('Europe/Berlin');
+        }
         $this->configuration = $configuration;
     }
 
@@ -47,7 +49,6 @@ class Application implements ApplicationInterface
     public static function create(array $configuration = array())
     {
         $application = new self($configuration);
-//        $configuration = Configuration::createFromArray($configuration);
 
         return $application;
     }
