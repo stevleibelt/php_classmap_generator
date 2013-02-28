@@ -2,7 +2,7 @@
 /**
 * Created with Net\Bazzline\ClassmapGenerator
 *
-* Creationdate 2013-02-28 23:56:46
+* Creationdate 2013-03-01 00:20:49
 */
 
 return array(
@@ -17,6 +17,7 @@ return array(
     'Net\Bazzline\ClassmapGenerator\Application\Application' => '../../../vendor/Net/Bazzline/ClassmapGenerator/Application/Application.php',
     'Net\Bazzline\ClassmapGenerator\Application\ApplicationInterface' => '../../../vendor/Net/Bazzline/ClassmapGenerator/Application/ApplicationInterface.php',
     'Net\Bazzline\ClassmapGenerator\Filesystem\ClassmapFilewriter' => '../../../vendor/Net/Bazzline/ClassmapGenerator/Filesystem/ClassmapFilewriter.php',
+    'Net\Bazzline\ClassmapGenerator\Filesystem\FilepathIterator' => '../../../vendor/Net/Bazzline/ClassmapGenerator/Filesystem/FilepathIterator.php',
     'Net\Bazzline\ClassmapGenerator\Filesystem\FileAnalyzer' => '../../../vendor/Net/Bazzline/ClassmapGenerator/Filesystem/FileAnalyzer.php',
     'Net\Bazzline\ClassmapGenerator\Filesystem\PhpFileOrDirectoryFilterIterator' => '../../../vendor/Net/Bazzline/ClassmapGenerator/Filesystem/PhpFileOrDirectoryFilterIterator.php',
     'Net\Bazzline\ClassmapGenerator\Configuration\ConfigurationValidator' => '../../../vendor/Net/Bazzline/ClassmapGenerator/Configuration/ConfigurationValidator.php'

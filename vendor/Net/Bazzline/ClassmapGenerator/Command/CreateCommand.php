@@ -2,11 +2,8 @@
 
 namespace Net\Bazzline\ClassmapGenerator\Command;
 
-use DirectoryIterator;
-use Net\Bazzline\ClassmapGenerator\Filesystem\PhpFileOrDirectoryFilterIterator;
-use Net\Bazzline\ClassmapGenerator\Filesystem\FileAnalyzer;
 use Net\Bazzline\ClassmapGenerator\Filesystem\ClassmapFilewriter;
-use InvalidArgumentException;
+use Net\Bazzline\ClassmapGenerator\Filesystem\FilepathIterator;
 
 /**
  * @author stev leibelt
@@ -141,16 +138,27 @@ class CreateCommand extends CommandAbstract
         $view->addData('Overwrite if file exists (yes/no): ' . ($this->isForced() ? 'yes' : 'no'));
         $view->addData('');
 
+        $filepathIterator = new FilepathIterator();
+        $filepathIterator->setBlacklistedDirectories($this->blacklistedDirectories);
+
         foreach ($this->whitelistedDirectories as $directory => $directoryPaths) {
             foreach ($directoryPaths as $directoryPath) {
                 if ($directoryPath === '*') {
-                    $pathToIterateOn = $this->basePath . DIRECTORY_SEPARATOR . $directory;
+                    $filepathIterator->addPath(
+                        $this->basePath . DIRECTORY_SEPARATOR .
+                        $directory
+                    );
                 } else {
-                    $pathToIterateOn = $this->basePath . DIRECTORY_SEPARATOR . $directory . DIRECTORY_SEPARATOR . $directoryPath;
+                    $filepathIterator->addPath(
+                        $this->basePath . DIRECTORY_SEPARATOR .
+                        $directory . DIRECTORY_SEPARATOR .
+                        $directoryPath
+                    );
                 }
-                $classmapFileContent = $this->iterateDirectory($pathToIterateOn);
             }
         }
+
+        $classmapFileContent = $filepathIterator->iterate();
 
         $classmapFileWriter = new ClassmapFilewriter();
         $classmapFileWriter->setClassmapFilepath(dirname(__DIR__) . DIRECTORY_SEPARATOR . $this->outputPath);
