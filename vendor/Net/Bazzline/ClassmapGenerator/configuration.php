@@ -8,16 +8,32 @@ return array(
         'base' => '../../..',
         'classmap' => 'autoloader_classmap.php',
         'whitelist' => array(
-            'application',
-            'vendor'
+            'application' => array(
+                '*'
+            ),
+            'vendor' => array(
+                '*'
+            )
         ),
         'blacklist' => array(
-            '.',
-            '..',
-            'data',
-            '.git',
-            'nbproject',
-            'install'
+            '.' => array(
+                '*'
+            ),
+            '..' => array(
+                '*'
+            ),
+            'data' => array(
+                '*'
+            ),
+            '.git' => array(
+                '*'
+            ),
+            'nbproject' => array(
+                '*'
+            ),
+            'install' => array(
+                '*'
+            )
         )
     )
 );
