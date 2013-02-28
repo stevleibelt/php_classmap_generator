@@ -138,7 +138,7 @@ class CreateCommand extends CommandAbstract
         $view->addData('');
 
         $directoryIterator = new PhpFileOrDirectoryFilterIterator(new DirectoryIterator($this->basePath));
-        $directoryIterator->setDirectoryNamesToFilter($this->blacklistedDirectories);
+        $directoryIterator->setDirectoryNamesToFilterOut($this->blacklistedDirectories);
         foreach ($directoryIterator as $entry) {
             $view->addData('entry:: ' . $entry->getPathname());
             $view->addData('entry:: ' . $entry->isDir());

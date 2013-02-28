@@ -16,7 +16,7 @@ class PhpFileOrDirectoryFilterIterator extends FilterIterator
      * @since 2013-02-28
      * @var array
      */
-    private $directoryNamesToFilter;
+    private $directoryNamesToFilterOut;
 
     /**
      * @authors stev leibelt
@@ -27,7 +27,7 @@ class PhpFileOrDirectoryFilterIterator extends FilterIterator
     {
         parent::__construct($iterator);
 
-        $this->setDirectoryNamesToFilter(array('.', '..'));
+        $this->setDirectoryNamesToFilterOut(array('.', '..'));
     }
 
     /**
@@ -35,9 +35,9 @@ class PhpFileOrDirectoryFilterIterator extends FilterIterator
      * @param array $names
      * @since 2013-02-28
      */
-    public function setDirectoryNamesToFilter(array $names)
+    public function setDirectoryNamesToFilterOut(array $names)
     {
-        $this->directoryNamesToFilter = $names;
+        $this->directoryNamesToFilterOut = $names;
     }
 
     /**
@@ -50,7 +50,7 @@ class PhpFileOrDirectoryFilterIterator extends FilterIterator
     public function accept()
     {
         return (($this->current()->isDir()
-                    && !in_array($this->current()->getFilename(), $this->directoryNamesToFilter)) 
+                    && !in_array($this->current()->getFilename(), $this->directoryNamesToFilterOut)) 
                 || preg_match('@\.(php|php5)$@i', $this->current()));
     }
 }
