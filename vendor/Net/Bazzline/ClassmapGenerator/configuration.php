@@ -5,12 +5,15 @@
  */
 return array(
     'path' => array(
-        'classmap' => 'config/autoloader_classmap.php',
+        'base' => '../../..',
+        'classmap' => 'autoloader_classmap.php',
         'whitelist' => array(
             'application',
             'vendor'
         ),
         'blacklist' => array(
+            '.',
+            '..',
             'data',
             '.git',
             'nbproject',
