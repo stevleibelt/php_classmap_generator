@@ -3,6 +3,7 @@
 namespace Net\Bazzline\ClassmapGenerator\Command;
 
 use DirectoryIterator;
+use ReflectionClass;
 use Net\Bazzline\ClassmapGenerator\Filesystem\PhpFileOrDirectoryFilterIterator;
 
 /**
@@ -137,17 +138,7 @@ class CreateCommand extends CommandAbstract
         $view->addData('Overwrite if file exists (yes/no): ' . ($this->isForced() ? 'yes' : 'no'));
         $view->addData('');
 
-        $directoryIterator = new PhpFileOrDirectoryFilterIterator(new DirectoryIterator($this->basePath));
-        $directoryIterator->setDirectoryNamesToFilterOut($this->blacklistedDirectories);
-        foreach ($directoryIterator as $entry) {
-            $view->addData('entry:: ' . $entry->getPathname());
-            $view->addData('entry:: ' . $entry->isDir());
-            $view->addData('entry:: ' . $entry->getFilename());
-            if ($entry->isDir()
-                && (in_array($entry->getFilename(), $this->whitelistedDirectories))) {
-                $view->addData('entry is directory and on whilelist');
-            }
-        }
+        $view = $this->iterateDirectory($this->basePath, $view);
 
         $view->addData('');
         foreach ($this->blacklistedDirectories as $directory) {
@@ -156,5 +147,43 @@ class CreateCommand extends CommandAbstract
         $view->addData('');
         $view->addData('done');
         $view->render();
+    }
+
+    private function iterateDirectory($path, $view)
+    {
+        $directoryIterator = new PhpFileOrDirectoryFilterIterator(new DirectoryIterator($path));
+        $directoryIterator->setDirectoryNamesToFilterOut($this->blacklistedDirectories);
+        foreach ($directoryIterator as $entry) {
+            $view->addData('entry:: ' . $entry->getPathname());
+            $view->addData('entry:: ' . $entry->getFilename());
+//            if ($entry->isDir()
+//                && (in_array($entry->getFilename(), $this->whitelistedDirectories))) {
+            if ($entry->isDir()) {
+                $view->addData('entry is directory and on whilelist');
+                $this->iterateDirectory($path . DIRECTORY_SEPARATOR . $entry->getFilename(), $view);
+            } else {
+                $view->addData('entry is file');
+
+                //http://stackoverflow.com/questions/928928/determining-what-classes-are-defined-in-a-php-class-file
+                //http://wiki.birth-online.de/snippets/php/get-classes-in-file
+                $fileContent = file_get_contents($path . DIRECTORY_SEPARATOR . $entry->getFilename());
+                $tokens = token_get_all($fileContent);
+                $class_token = false;
+                foreach ($tokens as $token) {
+                    if ( !is_array($token) ) continue;
+                    if (($token[0] == T_CLASS)
+                        || ($token[0] == T_ABSTRACT)
+//                        || ($token[0] == T_NAMESPACE)
+                        || ($token[0] == T_INTERFACE)) {
+                        $class_token = true;
+                    } else if ($class_token && $token[0] == T_STRING) {
+                        echo "Found class: $token[1]\n";
+                        $class_token = false;
+                    }
+                }
+            }
+        }
+
+        return $view;
     }
 }
