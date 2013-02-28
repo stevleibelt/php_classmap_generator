@@ -2,7 +2,7 @@
 /**
 * Created with Net\Bazzline\ClassmapGenerator
 *
-* Creationdate 2013-03-01 00:20:49
+* Creationdate 2013-03-01 00:21:45
 */
 
 return array(

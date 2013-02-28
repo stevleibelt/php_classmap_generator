@@ -177,35 +177,4 @@ class CreateCommand extends CommandAbstract
         $view->addData('done');
         $view->render();
     }
-
-    /**
-     * @author stev leibelt
-     * @param string $path
-     * @return array
-     * @since 2013-02-28
-     */
-    private function iterateDirectory($path)
-    {
-        $data = array();
-
-        if (is_dir($path)) {
-            $directoryIterator = new PhpFileOrDirectoryFilterIterator(new DirectoryIterator($path));
-            $directoryIterator->setDirectoryNamesToFilterOut($this->blacklistedDirectories);
-            $fileAnalyzer = new FileAnalyzer();
-
-            foreach ($directoryIterator as $entry) {
-                if ($entry->isDir()) {
-                    $data = array_merge($data, $this->iterateDirectory($path . DIRECTORY_SEPARATOR . $entry->getFilename()));
-                } else {
-                    try {
-                    $data = array_merge($data, $fileAnalyzer->getClassname($path . DIRECTORY_SEPARATOR . $entry->getFilename()));
-                    } catch (InvalidArgumentException $exception) {
-                        echo 'error::' . $exception->getMessage();
-                    }
-                }
-            }
-        }
-
-        return $data;
-    }
 }
