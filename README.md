@@ -5,14 +5,16 @@ simple psr-2 classmap generator
 
 Manual
 ==============
-NAME
-        php - classmap generator for psr-2 based php projects
-SYNOPSIS
-        index.php [OPTION]
-DESCRIPTION
-        Creates classmap by iterating over project directories.
+NAME   
+        php - classmap generator for psr-2 based php projects   
 
-        Following options are available.
+SYNOPSIS   
+        index.php [OPTION]   
+
+DESCRIPTION 
+        Creates classmap by iterating over project directories. 
+
+        Following options are available. 
 
         create
             Creates classmap if no classmap file exists.
@@ -23,10 +25,10 @@ DESCRIPTION
         help
             Print this manual.
 AUTHOR  
-        Written by Stev Leibelt
+        Written by Stev Leibelt  
 
-REPORTING BUGS
-        artodeto@arcor.de
+REPORTING BUGS  
+        artodeto@arcor.de  
 
-SEE ALSO
-        artodeto.bazzline.net
+SEE ALSO  
+        artodeto.bazzline.net  
