@@ -34,6 +34,7 @@ class Application implements ApplicationInterface
      */
     private function __construct(array $configuration = array()) 
     {
+        date_default_timezone_set('Europe/Berlin');
         $this->configuration = $configuration;
     }
 

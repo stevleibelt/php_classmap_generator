@@ -5,6 +5,7 @@ namespace Net\Bazzline\ClassmapGenerator\Command;
 use DirectoryIterator;
 use Net\Bazzline\ClassmapGenerator\Filesystem\PhpFileOrDirectoryFilterIterator;
 use Net\Bazzline\ClassmapGenerator\Filesystem\FileAnalyzer;
+use Net\Bazzline\ClassmapGenerator\View\ClassmapFileView;
 use InvalidArgumentException;
 
 /**
@@ -136,33 +137,38 @@ class CreateCommand extends CommandAbstract
      */
     public function execute()
     {
-        //create directory iterator
-        //load paths to search in
-        //create fileView
-        //create outputView
-        //add fileAnalyzer
-        $data = array();
-        $data[] = 'Overwrite if file exists (yes/no): ' . ($this->isForced() ? 'yes' : 'no');
-        $data[] = '';
+        $viewData = array();
+        $viewData[] = 'Overwrite if file exists (yes/no): ' . ($this->isForced() ? 'yes' : 'no');
+        $viewData[] = '';
 
-        foreach ($this->whitelistedDirectories as $name => $path) {
-            if (implode(', ', $path) === '*') {
-                $pathToIterateOn = $this->basePath . DIRECTORY_SEPARATOR . $name;
-
-                $data = array_merge($data, $this->iterateDirectory($pathToIterateOn));
+        foreach ($this->whitelistedDirectories as $directory => $directoryPaths) {
+            foreach ($directoryPaths as $directoryPath) {
+                if ($directoryPath === '*') {
+                    $pathToIterateOn = $this->basePath . DIRECTORY_SEPARATOR . $directory;
+                } else {
+                    $pathToIterateOn = $this->basePath . DIRECTORY_SEPARATOR . $directory . DIRECTORY_SEPARATOR . $directoryPath;
+                }
+                $classmapFileContent = $this->iterateDirectory($pathToIterateOn);
             }
         }
 
         $view = $this->getView();
-        $view->setData($data);
+        $view->setData($viewData);
 
         $view->addData('');
-        foreach ($this->blacklistedDirectories as $directory => $directoryPath) {
-            $view->addData('Ignored directory: ' . $this->basePath . DIRECTORY_SEPARATOR . $directory . DIRECTORY_SEPARATOR . $directoryPath);
+        foreach ($this->blacklistedDirectories as $directory => $directoryPaths) {
+            foreach ($directoryPaths as $directoryPath) {
+                $view->addData('Ignored directory: ' . $this->basePath . DIRECTORY_SEPARATOR . $directory . DIRECTORY_SEPARATOR . $directoryPath);
+            }
         }
         $view->addData('');
         $view->addData('done');
         $view->render();
+
+        $classmapView = new ClassmapFileView();
+        $classmapView->setClassmapFilepath(dirname(__DIR__) . DIRECTORY_SEPARATOR . $this->outputPath);
+        $classmapView->setData($classmapFileContent);
+        $classmapView->render();
     }
 
     private function iterateDirectory($path)
@@ -175,14 +181,9 @@ class CreateCommand extends CommandAbstract
             $fileAnalyzer = new FileAnalyzer();
 
             foreach ($directoryIterator as $entry) {
-                $data[] = 'entry:: ' . $entry->getPathname();
-                $data[] = 'entry:: ' . $entry->getFilename();
                 if ($entry->isDir()) {
-                    $data[] = 'entry is directory and on whilelist';
                     $data = array_merge($data, $this->iterateDirectory($path . DIRECTORY_SEPARATOR . $entry->getFilename()));
                 } else {
-                    $data[] = 'entry is a file';
-
                     try {
                     $data = array_merge($data, $fileAnalyzer->getClassname($path . DIRECTORY_SEPARATOR . $entry->getFilename()));
                     } catch (InvalidArgumentException $exception) {

@@ -7,6 +7,7 @@ return array(
     'path' => array(
         'base' => '../../..',
         'classmap' => 'autoloader_classmap.php',
+//        'classmap' => '/tmp/autoloader_classmap.php',
         'whitelist' => array(
             'application' => array(
                 '*'
