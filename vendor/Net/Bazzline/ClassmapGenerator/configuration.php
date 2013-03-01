@@ -5,34 +5,34 @@
  */
 return array(
     'path' => array(
-        'base' => '../../..',
+        'base' => '.',
         'classmap' => 'autoloader_classmap.php',
 //        'classmap' => '/tmp/autoloader_classmap.php',
         'whitelist' => array(
-            'application' => array(
+            '../../../application' => array(
                 '*'
             ),
-            'vendor' => array(
+            '../../../vendor' => array(
                 '*'
             )
         ),
         'blacklist' => array(
-            '.' => array(
+            '../../../.' => array(
                 '*'
             ),
-            '..' => array(
+            '../../../..' => array(
                 '*'
             ),
-            'data' => array(
+            '../../../data' => array(
                 '*'
             ),
-            '.git' => array(
+            '../../../.git' => array(
                 '*'
             ),
-            'nbproject' => array(
+            '../../../nbproject' => array(
                 '*'
             ),
-            'install' => array(
+            '../../../install' => array(
                 '*'
             )
         )

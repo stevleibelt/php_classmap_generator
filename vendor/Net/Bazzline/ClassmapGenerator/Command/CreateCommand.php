@@ -140,6 +140,7 @@ class CreateCommand extends CommandAbstract
 
         $filepathIterator = new FilepathIterator();
         $filepathIterator->setBlacklistedDirectories($this->blacklistedDirectories);
+        $filepathIterator->setBasepath($this->basePath);
 
         foreach ($this->whitelistedDirectories as $directory => $directoryPaths) {
             foreach ($directoryPaths as $directoryPath) {

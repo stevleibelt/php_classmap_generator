@@ -16,6 +16,13 @@ class FilepathIterator
     /**
      * @author stev leibelt
      * @since 2013-03-01
+     * @var string
+     */
+    private $basepath;
+
+    /**
+     * @author stev leibelt
+     * @since 2013-03-01
      * @var array
      */
     private $blacklistedDirectories;
@@ -26,6 +33,16 @@ class FilepathIterator
      * @var array
      */
     private $paths;
+
+    /**
+     * @author stev leibelt
+     * @param string $basepath
+     * @since 2013-03-01
+     */
+    public function setBasepath($basepath)
+    {
+        $this->basepath = (string) $basepath;
+    }
 
     /**
      * @author stev leibelt
@@ -47,9 +64,12 @@ class FilepathIterator
     public function iterate()
     {
         $classmapFileContent = array();
+        if (is_null($this->basepath)) {
+            $this->setBasepath('');
+        }
 
         foreach ($this->paths as $path) {
-            $classmapFileContent += $this->iteratePath($path);
+            $classmapFileContent += $this->iteratePath($path, $this->basepath);
         }
 
         return $classmapFileContent;
@@ -68,10 +88,11 @@ class FilepathIterator
     /**
      * @author stev leibelt
      * @param string $path
+     * @param string $basepath
      * @return array
      * @since 2013-02-28
      */
-    private function iteratePath($path)
+    private function iteratePath($path, $basepath)
     {
         $data = array();
 
@@ -83,10 +104,10 @@ class FilepathIterator
 
             foreach ($directoryIterator as $entry) {
                 if ($entry->isDir()) {
-                    $data = array_merge($data, $this->iteratePath($path . DIRECTORY_SEPARATOR . $entry->getFilename()));
+                    $data = array_merge($data, $this->iteratePath($path . DIRECTORY_SEPARATOR . $entry->getFilename(), $basepath));
                 } else {
                     try {
-                    $data = array_merge($data, $fileAnalyzer->getClassname($path . DIRECTORY_SEPARATOR . $entry->getFilename()));
+                    $data = array_merge($data, $fileAnalyzer->getClassname($path . DIRECTORY_SEPARATOR . $entry->getFilename(), $basepath));
                     } catch (InvalidArgumentException $exception) {
                         echo 'error::' . $exception->getMessage();
                     }

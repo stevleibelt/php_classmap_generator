@@ -13,13 +13,14 @@ class FileAnalyzer
     /**
      * @author stev leibelt
      * @param string $filepath
+     * @param string $basepath
      * @return string
      * @since 2013-02-27
      * @throws InvalidArgumentException
      * 
      * based on: http://stackoverflow.com/questions/928928/determining-what-classes-are-defined-in-a-php-class-file
      */
-    function getClassname($filepath)
+    function getClassname($filepath, $basepath = '')
     {
         if (!file_exists($filepath)) {
             $message = 'Given filename "' . $filepath . '" doesn\'t exist';
@@ -36,6 +37,7 @@ class FileAnalyzer
         $errorReporting = error_reporting();
         error_reporting(E_ALL ^ E_NOTICE);
 
+        $filepathForClassmapFile = substr($filepath, strlen($basepath));
         $fileContent = file_get_contents($filepath);
         $tokens = token_get_all($fileContent);
         $numberOfTokens = count($tokens);
@@ -88,9 +90,17 @@ class FileAnalyzer
 
         $classnameToFilepath = array();
         foreach ($classNames as $fileContent) {
-            $namespace = $fileContent['namespace'];
-            foreach ($fileContent['classes'] as $class) {
-                $classnameToFilepath[$namespace . '\\' . $class['name']] = $filepath;
+            $namespace = (isset($fileContent['namespace'])) ? $fileContent['namespace'] : '';
+            if (isset($fileContent['classes'])) {
+                foreach ($fileContent['classes'] as $class) {
+                    $classnameToFilepath[$namespace . '\\' . $class['name']] = $filepathForClassmapFile;
+                }
+            } else {
+                foreach ($fileContent as $class) {
+                    if (isset($class['name'])) {
+                        $classnameToFilepath[$class['name']] = $filepathForClassmapFile;
+                    }
+                }
             }
         }
 
