@@ -4,6 +4,7 @@ namespace Net\Bazzline\ClassmapGenerator\Command;
 
 use Net\Bazzline\ClassmapGenerator\Factory\FilepathIteratorFactory;
 use Net\Bazzline\ClassmapGenerator\Factory\ClassmapFilewriterFactory;
+use Net\Bazzline\ClassmapGenerator\Factory\AutoloaderFilewriterFactory;
 
 /**
  * @author stev leibelt
@@ -11,6 +12,13 @@ use Net\Bazzline\ClassmapGenerator\Factory\ClassmapFilewriterFactory;
  */
 class CreateCommand extends CommandAbstract
 {
+    /**
+     * @author stev leibelt
+     * @param boolean
+     * @since 2013-03-03
+     */
+    private $createAutoloaderFile;
+
     /**
      * @author stev leibelt
      * @since 2013-02-28
@@ -58,7 +66,14 @@ class CreateCommand extends CommandAbstract
      * @since 2013-03-03
      * @var string 
      */
-    private $classMapFileName;
+    private $classmapFileName;
+
+    /**
+     * @author stev leibelt
+     * @since 2013-03-03
+     * @var string 
+     */
+    private $autoloaderFileName;
 
     /**
      * @author stev leibelt
@@ -71,6 +86,7 @@ class CreateCommand extends CommandAbstract
         $this->setOutputpath(getcwd());
         $this->setBlacklistDirectories(array());
         $this->setWhitelistDirectories(array());
+        $this->setCreateAutloaderFile(false);
         $this->classMapContent = array();
     }
 
@@ -129,9 +145,29 @@ class CreateCommand extends CommandAbstract
      * @param string $filename
      * @since 2013-03-03
      */
-    public function setFilename($filename)
+    public function setClassmapFilename($filename)
     {
-        $this->classMapFileName = (string) $filename;
+        $this->classmapFileName = (string) $filename;
+    }
+
+    /**
+     * @author stev leibelt
+     * @param string $filename
+     * @since 2013-03-03
+     */
+    public function setAutoloaderFilename($filename)
+    {
+        $this->autoloaderFileName = (string) $filename;
+    }
+
+    /**
+     * @author stev leibelt
+     * @param boolean $createAutoloaderFile
+     * @since 2013-03-03
+     */
+    public function setCreateAutloaderFile($createAutoloaderFile)
+    {
+        $this->createAutoloaderFile = (boolean) $createAutoloaderFile;
     }
 
     /**
@@ -166,9 +202,10 @@ class CreateCommand extends CommandAbstract
         $classmapFileWriter = ClassmapFilewriterFactory::create(
             array(
                 ClassmapFilewriterFactory::OPTION_FILE_DATA => $filepathIterator->iterate(),
-                ClassmapFilewriterFactory::OPTION_FILE_PATH => realpath($this->outputPath) . DIRECTORY_SEPARATOR . $this->classMapFileName
+                ClassmapFilewriterFactory::OPTION_FILE_PATH => realpath($this->outputPath) . DIRECTORY_SEPARATOR . $this->autoloaderFileName
             )
         );
+
         if ($classmapFileWriter->fileExists()) {
             if ($this->isForced()) {
                 $view->addData(($classmapFileWriter->overwrite()) ? 'classmap written' : 'classmap was not written');
@@ -177,6 +214,24 @@ class CreateCommand extends CommandAbstract
             }
         } else {
             $view->addData(($classmapFileWriter->write()) ? 'classmap written' : 'classmap was not written');
+        }
+
+        if ($this->createAutoloaderFile) {
+            $autoloaderFilewriter = AutoloaderFilewriterFactory::create(
+                array(
+                    ClassmapFilewriterFactory::OPTION_FILE_PATH => realpath($this->outputPath) . DIRECTORY_SEPARATOR . $this->a
+                )
+            );
+
+            if ($autoloaderFilewriter->fileExists()) {
+                if ($this->isForced()) {
+                    $view->addData(($autoloaderFilewriter->overwrite()) ? 'autoloader written' : 'autoloader was not written');
+                } else {
+                    $view->addData('Autoloaderfile exists. Use force to overwrite.');
+                }
+            } else {
+                $view->addData(($autoloaderFilewriter->write()) ? 'autoloader written' : 'autoloader was not written');
+            }
         }
 
         $view->addData('');

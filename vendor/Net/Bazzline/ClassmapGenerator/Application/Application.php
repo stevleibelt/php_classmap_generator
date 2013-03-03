@@ -121,9 +121,10 @@ class Application implements ApplicationInterface
         $command->setForce($forceWriting);
         $command->setBasePath($this->configuration['path']['base']);
         $command->setOutputpath($this->configuration['path']['classmap']);
-        $command->setFilename($this->configuration['name']['classmap']);
+        $command->setClassmapFilename($this->configuration['name']['classmap']);
         $command->setWhitelistDirectories($this->configuration['path']['whitelist']);
         $command->setBlacklistDirectories($this->configuration['path']['blacklist']);
+        $command->setCreateAutloaderFile($this->configuration['createAutoloaderFile']);
         $command->execute();
     }
 

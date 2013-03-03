@@ -30,9 +30,10 @@ function autoloadFromFilesystem($className)
 function autoloadFromFilesystemWithClassmap($classname)
 {
     $classnameToFilepath = require 'autoloader_classmap.php';
+    $pathToProjectRoot = '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR;
 
     if (isset($classnameToFilepath[$classname])) {
-        require $classnameToFilepath[$classname];
+        require $pathToProjectRoot . $classnameToFilepath[$classname];
     } else {
         return false;
     }

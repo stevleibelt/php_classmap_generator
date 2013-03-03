@@ -6,6 +6,7 @@
 return array(
     'createAutoloaderFile' => false,
     'path' => array(
+        'classmap' => '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..',
         'whitelist' => array(
             'application' => '*',
             'vendor' => array(

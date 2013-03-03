@@ -4,7 +4,7 @@
  * @since 2013-02-27
  */
 return array(
-    'createAutoloaderFile' => false,
+    'createAutoloaderFile' => true,
     'name' => array(
         'classmap' => 'autoloader_classmap.php',
         'autoloader' => 'autoloader.php',
