@@ -12,6 +12,7 @@ use InvalidArgumentException;
 class AutoloaderFilewriterFactory implements FactoryInterface
 {
     const OPTION_FILE_PATH = 'filePath';
+    const OPTION_RELATIVE_PATH_TO_PROJECT_ROOT = 'relativePathToProjectRoot';
 
     /**
      * @author stev leibelt
@@ -25,6 +26,7 @@ class AutoloaderFilewriterFactory implements FactoryInterface
 
         $autoloaderFileWriter = new AutoloaderFilewriter();
         $autoloaderFileWriter->setFilePath($options[self::OPTION_FILE_PATH]);
+        $autoloaderFileWriter->setRelativePathToProjectRoot($options[self::OPTION_RELATIVE_PATH_TO_PROJECT_ROOT]);
 
         return $autoloaderFileWriter;
     }
@@ -38,7 +40,8 @@ class AutoloaderFilewriterFactory implements FactoryInterface
     private static function validateOptions(array $options)
     {
         $mandatoryOptions = array(
-            self::OPTION_FILE_PATH
+            self::OPTION_FILE_PATH,
+            self::OPTION_RELATIVE_PATH_TO_PROJECT_ROOT
         );
 
         foreach ($mandatoryOptions as $mandatoryOption) {

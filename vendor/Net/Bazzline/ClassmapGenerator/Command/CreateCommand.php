@@ -202,7 +202,7 @@ class CreateCommand extends CommandAbstract
         $classmapFileWriter = ClassmapFilewriterFactory::create(
             array(
                 ClassmapFilewriterFactory::OPTION_FILE_DATA => $filepathIterator->iterate(),
-                ClassmapFilewriterFactory::OPTION_FILE_PATH => realpath($this->outputPath) . DIRECTORY_SEPARATOR . $this->autoloaderFileName
+                ClassmapFilewriterFactory::OPTION_FILE_PATH => realpath($this->outputPath) . DIRECTORY_SEPARATOR . $this->classmapFileName
             )
         );
 
@@ -219,7 +219,8 @@ class CreateCommand extends CommandAbstract
         if ($this->createAutoloaderFile) {
             $autoloaderFilewriter = AutoloaderFilewriterFactory::create(
                 array(
-                    ClassmapFilewriterFactory::OPTION_FILE_PATH => realpath($this->outputPath) . DIRECTORY_SEPARATOR . $this->a
+                    AutoloaderFilewriterFactory::OPTION_FILE_PATH => realpath($this->outputPath) . DIRECTORY_SEPARATOR . $this->autoloaderFileName,
+                    AutoloaderFilewriterFactory::OPTION_RELATIVE_PATH_TO_PROJECT_ROOT => $this->basePath
                 )
             );
 

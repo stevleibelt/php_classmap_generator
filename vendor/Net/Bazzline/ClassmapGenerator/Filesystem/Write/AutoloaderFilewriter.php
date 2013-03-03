@@ -80,7 +80,7 @@ function autoloadFromFilesystemWithClassmap_$uniqueIdentifier(\$classname)
     \$pathToProjectRoot = $this->relativePathToProjectRoot;
 
     if (isset(\$classnameToFilepath[\$classname])) {
-        require \$pathToProjectRoot . \$classnameToFilepath[\$classname];
+        require \$pathToProjectRoot . DIRECTORY_SEPARATOR . \$classnameToFilepath[\$classname];
     } else {
         return false;
     }
@@ -92,6 +92,7 @@ if (file_exists('autoloader_classmap.php')) {
 spl_autoload_register('autoloadFromFilesystem_$uniqueIdentifier');'
 EOC;
 
+exit($this->getFilepath());
         return (file_put_contents($this->getFilepath(), $data) !== false);
     }
 }

@@ -125,6 +125,7 @@ class Application implements ApplicationInterface
         $command->setWhitelistDirectories($this->configuration['path']['whitelist']);
         $command->setBlacklistDirectories($this->configuration['path']['blacklist']);
         $command->setCreateAutloaderFile($this->configuration['createAutoloaderFile']);
+        $command->setAutoloaderFilename($this->configuration['name']['autoloader']);
         $command->execute();
     }
 
