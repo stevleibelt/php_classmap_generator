@@ -50,7 +50,7 @@ class PhpFileOrDirectoryFilterIterator extends FilterIterator
     public function accept()
     {
         return (($this->current()->isDir()
-                    && !array_key_exists($this->current()->getFilename(), $this->directoryNamesToFilterOut)) 
+                    && !in_array($this->current()->getFilename(), $this->directoryNamesToFilterOut)) 
                 || preg_match('@\.(php|php5)$@i', $this->current()));
     }
 }

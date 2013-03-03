@@ -14,6 +14,12 @@ return array(
                         'ClassmapGenerator' => '*'
                     )
                 ),
+            ),
+            'application' => '*',
+            'classes' => '*',
+            'namespaces' => '*',
+            'diretory' => array(
+                'another' => '*'
             )
         )
     )

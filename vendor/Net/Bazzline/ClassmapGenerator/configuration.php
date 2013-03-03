@@ -11,18 +11,12 @@ return array(
         'projectConfiguration' => 'classmap_generator_configuration.php'
     ),
     'path' => array(
-        'base' => '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR,
+        'base' => '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..',
         'classmap' => '.',
         'projectConfiguration' => '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR,
-        'autloader' => '.',
+        'autloader' => '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR,
         'whitelist' => array(
-            'vendor' => array(
-                'Net' => array(
-                    'Bazzline' => array(
-                        'ClassmapGenerator' => '*'
-                    )
-                )
-            )
+            'vendor' => '*'
         ),
         'blacklist' => array(
             '.' => '*',

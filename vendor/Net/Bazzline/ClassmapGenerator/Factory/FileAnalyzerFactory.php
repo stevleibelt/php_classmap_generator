@@ -2,7 +2,7 @@
 
 namespace Net\Bazzline\ClassmapGenerator\Factory;
 
-use Net\Bazzline\ClassmapGenerator\Filesystem\FileAnalyzer;
+use Net\Bazzline\ClassmapGenerator\Filesystem\Analyze\FileAnalyzer;
 use InvalidArgumentException;
 
 /**

@@ -45,7 +45,6 @@ class FileAnalyzer implements AnalyzeInterface
     /**
      * @author stev leibelt
      * @param string $filepath
-     * @param string $basepath
      * @return string
      * @since 2013-02-27
      * @throws InvalidArgumentException
@@ -65,56 +64,56 @@ class FileAnalyzer implements AnalyzeInterface
         $classNames = array();
         $namespacePositions = array();
         $final = array();
-        $wasNamespaceFound = false;
+        $namespaceWasFound = false;
         $namespaceIterator = 0;
+        $basePath = realpath($this->getBasepath());
 
         $errorReporting = error_reporting();
         error_reporting(E_ALL ^ E_NOTICE);
 
-        $filepathForClassmapFile = substr($filepath, strlen($basepath));
         $fileContent = file_get_contents($filepath);
         $tokens = token_get_all($fileContent);
         $numberOfTokens = count($tokens);
 
-        for ($tokenIterator = 0; $tokenIterator < $numberOfTokens; $tokenIterator++) 
-        {
-            if(!$wasNamespaceFound && $tokens[$tokenIterator][0] == T_NAMESPACE)
-            {
+        for ($tokenIterator = 0; $tokenIterator < $numberOfTokens; $tokenIterator++) {
+            if(!$namespaceWasFound 
+                && $tokens[$tokenIterator][0] == T_NAMESPACE) {
                 $namespacePositions[$namespaceIterator]['start'] = $tokenIterator;
-                $wasNamespaceFound = true;
-            }
-            elseif( $wasNamespaceFound && ($tokens[$tokenIterator] == ';' || $tokens[$tokenIterator] == '{') )
-            {
+                $namespaceWasFound = true;
+            } else if ($namespaceWasFound 
+                && ($tokens[$tokenIterator] == ';' 
+                || $tokens[$tokenIterator] == '{') ) {
                 $namespacePositions[$namespaceIterator]['end']= $tokenIterator;
                 $namespaceIterator++;
-                $wasNamespaceFound = false;
-            }
-            elseif ($tokenIterator-2 >= 0 && $tokens[$tokenIterator - 2][0] == T_CLASS && $tokens[$tokenIterator - 1][0] == T_WHITESPACE && $tokens[$tokenIterator][0] == T_STRING) 
-            {
-                if($tokenIterator-4 >=0 && $tokens[$tokenIterator - 4][0] == T_ABSTRACT)
-                {
+                $namespaceWasFound = false;
+            } else if ($tokenIterator-2 >= 0 
+                && $tokens[$tokenIterator - 2][0] == T_CLASS 
+                && $tokens[$tokenIterator - 1][0] == T_WHITESPACE 
+                && $tokens[$tokenIterator][0] == T_STRING) {
+                if ($tokenIterator-4 >=0 
+                    && $tokens[$tokenIterator - 4][0] == T_ABSTRACT) {
                     $classNames[$namespaceIterator][] = array('name' => $tokens[$tokenIterator][1], 'type' => 'ABSTRACT CLASS');
-                }
-                else
-                {
+                } else {
                     $classNames[$namespaceIterator][] = array('name' => $tokens[$tokenIterator][1], 'type' => 'CLASS');
                 }
-            }
-            elseif ($tokenIterator-2 >= 0 && $tokens[$tokenIterator - 2][0] == T_INTERFACE && $tokens[$tokenIterator - 1][0] == T_WHITESPACE && $tokens[$tokenIterator][0] == T_STRING)
-            {
+            } else if ($tokenIterator-2 >= 0 
+                && $tokens[$tokenIterator - 2][0] == T_INTERFACE 
+                && $tokens[$tokenIterator - 1][0] == T_WHITESPACE 
+                && $tokens[$tokenIterator][0] == T_STRING) {
                 $classNames[$namespaceIterator][] = array('name' => $tokens[$tokenIterator][1], 'type' => 'INTERFACE');
             }
         }
         error_reporting($errorReporting);
-        if (empty($classNames)) return array();
+        if (empty($classNames)) {
+            return array();
+        }
 
-        if(!empty($namespacePositions))
-        {
-            foreach($namespacePositions as $namespacePositionIterator => $namespacePosition)
-            {
+        if (!empty($namespacePositions)) {
+            foreach ($namespacePositions as $namespacePositionIterator => $namespacePosition) {
                 $namespace = '';
-                for($tokenIterator = $namespacePosition['start'] + 1; $tokenIterator < $namespacePosition['end']; $tokenIterator++)
+                for($tokenIterator = $namespacePosition['start'] + 1; $tokenIterator < $namespacePosition['end']; $tokenIterator++) {
                     $namespace .= $tokens[$tokenIterator][1];
+                }
 
                 $namespace = trim($namespace);
                 $final[$namespacePositionIterator] = array('namespace' => $namespace, 'classes' => $classNames[$namespacePositionIterator+1]);
@@ -123,16 +122,17 @@ class FileAnalyzer implements AnalyzeInterface
         }
 
         $classnameToFilepath = array();
+        $filepathWithoutBasepath = substr($filepath, strlen($basePath . DIRECTORY_SEPARATOR));
         foreach ($classNames as $fileContent) {
             $namespace = (isset($fileContent['namespace'])) ? $fileContent['namespace'] : '';
             if (isset($fileContent['classes'])) {
                 foreach ($fileContent['classes'] as $class) {
-                    $classnameToFilepath[$namespace . '\\' . $class['name']] = $filepathForClassmapFile;
+                    $classnameToFilepath[$namespace . '\\' . $class['name']] = $filepathWithoutBasepath;
                 }
             } else {
                 foreach ($fileContent as $class) {
                     if (isset($class['name'])) {
-                        $classnameToFilepath[$class['name']] = $filepathForClassmapFile;
+                        $classnameToFilepath[$class['name']] = $filepathWithoutBasepath;
                     }
                 }
             }

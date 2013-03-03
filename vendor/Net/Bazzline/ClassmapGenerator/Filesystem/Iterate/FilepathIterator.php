@@ -80,7 +80,7 @@ class FilepathIterator implements IterateInterface
         }
 
         foreach ($this->whitelistedPaths as $path) {
-            $classmapFileContent += $this->iteratePath($path, $this->basepath);
+            $classmapFileContent += $this->iteratePath(realpath($this->basepath . DIRECTORY_SEPARATOR . $path));
         }
 
         return $classmapFileContent;
@@ -89,33 +89,39 @@ class FilepathIterator implements IterateInterface
     /**
      * @author stev leibelt
      * @param string $path
-     * @param string $basepath
      * @return array
      * @since 2013-02-28
      */
-    private function iteratePath($path, $basepath)
+    private function iteratePath($realPath)
     {
         $classNameToFilePathEntries = array();
 
-        if (is_dir($path)) {
+        if (is_string($realPath)) {
             $directoryIterator = DirectoryIteratorFactory::create(
                 array(
-                    DirectoryIteratorFactory::OPTION_PATH => $path,
+                    DirectoryIteratorFactory::OPTION_PATH => $realPath,
                     DirectoryIteratorFactory::OPTION_BLACKISTED_DIRECTORIES => $this->blacklistedPaths
                 )
             );
             $fileAnalyzer = FileAnalyzerFactory::create(
                 array(
-                    FileAnalyzerFactory::OPTION_BASEPATH => $basepath
+                    FileAnalyzerFactory::OPTION_BASEPATH => $this->basepath
                 )
             );
 
-            foreach ($directoryIterator as $entry) {
-                $currentPath = $path . DIRECTORY_SEPARATOR . $entry->getFilename();
-                if ($entry->isDir()) {
-                    $classNameToFilePathEntries = array_merge($classNameToFilePathEntries, $this->iteratePath($currentPath, $basepath));
-                } else {
-                    $classNameToFilePathEntries = array_merge($classNameToFilePathEntries, $fileAnalyzer->analyze($currentPath));
+            if (is_dir($realPath)) {
+                foreach ($directoryIterator as $entry) {
+                    $currentPath = $realPath . DIRECTORY_SEPARATOR . $entry->getFilename();
+
+                    if ($entry->isDir()) {
+                        $classNameToFilePathEntries += $this->iteratePath($currentPath);
+                    } else {
+                        $classNameToFilePathEntries += $fileAnalyzer->analyze($currentPath);
+                    }
+                }
+            } else if (is_file($realPath)) {
+                if (!in_array($realPath, $classNameToFilePathEntries)) {
+                    $classNameToFilePathEntries += $fileAnalyzer->analyze($realPath);
                 }
             }
         }
