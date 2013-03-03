@@ -10,23 +10,6 @@ class AutoloaderFilewriter extends FilewriterAbstract
 {
     /**
      * @author stev leibelt
-     * @since 2013-03-03
-     * @var string
-     */
-    private $relativePathToProjectRoot;
-
-    /**
-     * @author stev leibelt
-     * @param string $relativePathToProjectRoot
-     * @since 2013-03-03
-     */
-    public function setRelativePathToProjectRoot($relativePathToProjectRoot)
-    {
-        $this->relativePathToProjectRoot = $relativePathToProjectRoot;
-    }
-
-    /**
-     * @author stev leibelt
      * @return boolean
      * @since 22013-03-03
      * @throws \RuntimeException
@@ -77,10 +60,9 @@ function autoloadFromFilesystem_$uniqueIdentifier(\$className)
 function autoloadFromFilesystemWithClassmap_$uniqueIdentifier(\$classname)
 {
     \$classnameToFilepath = require 'autoloader_classmap.php';
-    \$pathToProjectRoot = $this->relativePathToProjectRoot;
 
     if (isset(\$classnameToFilepath[\$classname])) {
-        require \$pathToProjectRoot . DIRECTORY_SEPARATOR . \$classnameToFilepath[\$classname];
+        require \$classnameToFilepath[\$classname];
     } else {
         return false;
     }
@@ -89,10 +71,9 @@ function autoloadFromFilesystemWithClassmap_$uniqueIdentifier(\$classname)
 if (file_exists('autoloader_classmap.php')) {
     spl_autoload_register('autoloadFromFilesystemWithClassmap_$uniqueIdentifier');
 }
-spl_autoload_register('autoloadFromFilesystem_$uniqueIdentifier');'
+spl_autoload_register('autoloadFromFilesystem_$uniqueIdentifier');
 EOC;
 
-exit($this->getFilepath());
         return (file_put_contents($this->getFilepath(), $data) !== false);
     }
 }

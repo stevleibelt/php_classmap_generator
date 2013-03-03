@@ -120,12 +120,13 @@ class Application implements ApplicationInterface
         $command->setView(new InfoView());
         $command->setForce($forceWriting);
         $command->setBasePath($this->configuration['path']['base']);
-        $command->setOutputpath($this->configuration['path']['classmap']);
+        $command->setClassmapOutputpath($this->configuration['path']['classmap']);
         $command->setClassmapFilename($this->configuration['name']['classmap']);
         $command->setWhitelistDirectories($this->configuration['path']['whitelist']);
         $command->setBlacklistDirectories($this->configuration['path']['blacklist']);
         $command->setCreateAutloaderFile($this->configuration['createAutoloaderFile']);
         $command->setAutoloaderFilename($this->configuration['name']['autoloader']);
+        $command->setAutoloaderOutputpath($this->configuration['path']['autoloader']);
         $command->execute();
     }
 

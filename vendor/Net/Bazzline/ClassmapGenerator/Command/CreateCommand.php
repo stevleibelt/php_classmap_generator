@@ -38,7 +38,14 @@ class CreateCommand extends CommandAbstract
      * @since 2013-02-28
      * @var string
      */
-    private $outputPath;
+    private $classmapOutputPath;
+
+    /**
+     * @author stev leibelt
+     * @since 2013-03-03
+     * @var string
+     */
+    private $autoloaderOutputPath;
 
     /**
      * @author stev leibelt
@@ -83,7 +90,8 @@ class CreateCommand extends CommandAbstract
     {
         $this->setForce(false);
         $this->setBasePath(getcwd());
-        $this->setOutputpath(getcwd());
+        $this->setClassmapOutputpath(getcwd());
+        $this->setAutoloaderOutputpath(getcwd());
         $this->setBlacklistDirectories(array());
         $this->setWhitelistDirectories(array());
         $this->setCreateAutloaderFile(false);
@@ -115,9 +123,19 @@ class CreateCommand extends CommandAbstract
      * @param string $outputPath
      * @since 2013-02-28
      */
-    public function setOutputpath($outputPath)
+    public function setClassmapOutputpath($outputPath)
     {
-        $this->outputPath = (string) $outputPath;
+        $this->classmapOutputPath = (string) $outputPath;
+    }
+
+    /**
+     * @author stev leibelt
+     * @param string $outputPath
+     * @since 2013-03-03
+     */
+    public function setAutoloaderOutputpath($outputPath)
+    {
+        $this->autoloaderOutputPath = (string) $outputPath;
     }
 
     /**
@@ -202,7 +220,7 @@ class CreateCommand extends CommandAbstract
         $classmapFileWriter = ClassmapFilewriterFactory::create(
             array(
                 ClassmapFilewriterFactory::OPTION_FILE_DATA => $filepathIterator->iterate(),
-                ClassmapFilewriterFactory::OPTION_FILE_PATH => realpath($this->outputPath) . DIRECTORY_SEPARATOR . $this->classmapFileName
+                ClassmapFilewriterFactory::OPTION_FILE_PATH => realpath($this->classmapOutputPath) . DIRECTORY_SEPARATOR . $this->classmapFileName
             )
         );
 
@@ -219,8 +237,7 @@ class CreateCommand extends CommandAbstract
         if ($this->createAutoloaderFile) {
             $autoloaderFilewriter = AutoloaderFilewriterFactory::create(
                 array(
-                    AutoloaderFilewriterFactory::OPTION_FILE_PATH => realpath($this->outputPath) . DIRECTORY_SEPARATOR . $this->autoloaderFileName,
-                    AutoloaderFilewriterFactory::OPTION_RELATIVE_PATH_TO_PROJECT_ROOT => $this->basePath
+                    AutoloaderFilewriterFactory::OPTION_FILE_PATH => realpath($this->autoloaderOutputPath) . DIRECTORY_SEPARATOR . $this->autoloaderFileName
                 )
             );
 

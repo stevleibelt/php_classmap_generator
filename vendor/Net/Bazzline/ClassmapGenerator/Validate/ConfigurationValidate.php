@@ -27,7 +27,7 @@ class ConfigurationValidate implements ValidateInterface
             && (isset($data['path']))
             && (isset($data['path']['base']))
             && (isset($data['path']['classmap']))
-            && (isset($data['path']['autloader']))
+            && (isset($data['path']['autoloader']))
             && (isset($data['path']['whitelist']))
             && (isset($data['path']['blacklist']))
             && (strlen($data['path']['classmap']) > 0)
