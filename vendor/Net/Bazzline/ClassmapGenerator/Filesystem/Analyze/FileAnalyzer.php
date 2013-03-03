@@ -1,15 +1,47 @@
 <?php
 
-namespace Net\Bazzline\ClassmapGenerator\Filesystem;
+namespace Net\Bazzline\ClassmapGenerator\Filesystem\Analyze;
 
 use InvalidArgumentException;
+use RuntimeException;
 
 /**
  * @author stev leibelt
  * @since 2013-02-27
  */
-class FileAnalyzer
+class FileAnalyzer implements AnalyzeInterface
 {
+    /**
+     * @author stev leibelt
+     * @since 2013-03-03
+     * @var string
+     */
+    private $basepath;
+
+    /**
+     * @author stev leibelt
+     * @param string $basepath
+     * @since 2013-03-03
+     */
+    public function setBasepath($basepath) 
+    {
+        $this->basepath = (string) $basepath;
+    }
+
+    /**
+     * @author stev leibelt
+     * @return string $basepath
+     * @since 2013-03-03
+     */
+    public function getBasepath()
+    {
+        if (is_null($this->basepath)) {
+            $this->basepath = '';
+        }
+
+        return $this->basepath;
+    }
+
     /**
      * @author stev leibelt
      * @param string $filepath
@@ -17,10 +49,12 @@ class FileAnalyzer
      * @return string
      * @since 2013-02-27
      * @throws InvalidArgumentException
+     * @throws RuntimeException
+     * @todo add RuntimeException, remove InvalidArgumentException if needed
      * 
      * based on: http://stackoverflow.com/questions/928928/determining-what-classes-are-defined-in-a-php-class-file
      */
-    function getClassname($filepath, $basepath = '')
+    public function analyze($filepath)
     {
         if (!file_exists($filepath)) {
             $message = 'Given filename "' . $filepath . '" doesn\'t exist';

@@ -1,6 +1,6 @@
 <?php
 
-namespace Net\Bazzline\ClassmapGenerator\Filesystem;
+namespace Net\Bazzline\ClassmapGenerator\Filesystem\Filter;
 
 use Iterator;
 use FilterIterator;

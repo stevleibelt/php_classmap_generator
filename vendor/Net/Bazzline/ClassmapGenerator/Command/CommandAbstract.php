@@ -8,7 +8,7 @@ use Net\Bazzline\ClassmapGenerator\View\ViewAbstract;
  * @author stev leibelt
  * @since 2013-02-27
  */
-abstract class CommandAbstract
+abstract class CommandAbstract implements CommandInterface
 {
     /**
      * @author stev leibelt
@@ -35,10 +35,4 @@ abstract class CommandAbstract
     {
         return $this->view;
     }
-
-    /**
-     * @author stev leibelt
-     * @since 2013-02-28
-     */
-    abstract function execute();
 }

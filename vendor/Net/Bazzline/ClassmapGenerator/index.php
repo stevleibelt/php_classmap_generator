@@ -6,7 +6,7 @@
 namespace Net\Bazzline\ClassmapGenerator;
 
 //make everything relative to the application root
-chdir(dirname(__DIR__));
+chdir(realpath(__DIR__ . DIRECTORY_SEPARATOR));
 require 'autoloader.php';
 
 Application\Application::create(require 'configuration.php')

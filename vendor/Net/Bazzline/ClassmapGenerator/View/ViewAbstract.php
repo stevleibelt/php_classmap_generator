@@ -6,8 +6,13 @@ namespace Net\Bazzline\ClassmapGenerator\View;
  * @author stev leibelt
  * @since 2013-02-27
  */
-abstract class ViewAbstract
+abstract class ViewAbstract implements RenderInterface
 {
+    /**
+     * @author stev leibelt
+     * @since 2013-02-27
+     * @var type 
+     */
     private $data;
 
     /**
@@ -33,12 +38,6 @@ abstract class ViewAbstract
 
         $this->data[] = $data;
     }
-
-    /**
-     * @author stev leibelt
-     * @since 2013-02-27
-     */
-    abstract public function render();
 
     /**
      * @author stev leibelt

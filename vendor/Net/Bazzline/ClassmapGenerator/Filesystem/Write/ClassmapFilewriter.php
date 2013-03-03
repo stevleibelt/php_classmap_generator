@@ -1,12 +1,12 @@
 <?php
 
-namespace Net\Bazzline\ClassmapGenerator\Filesystem;
+namespace Net\Bazzline\ClassmapGenerator\Filesystem\Write;
 
 /**
  * @author stev leibelt
  * @since 2013-02-28
  */
-class ClassmapFilewriter
+class ClassmapFilewriter implements WriterInterface
 {
     /**
      * @author stev leibelt
@@ -27,7 +27,7 @@ class ClassmapFilewriter
      * @param string $filepath
      * @since 2013-02-28
      */
-    public function setClassmapFilepath($filepath)
+    public function setFilePath($filepath)
     {
         $this->filepath = $filepath;
     }
@@ -56,6 +56,7 @@ class ClassmapFilewriter
      * @author stev leibelt
      * @return boolean
      * @since 2013-02-28
+     * @throws \RuntimeException
      */
     public function overwrite()
     {
@@ -70,6 +71,7 @@ class ClassmapFilewriter
      * @author stev leibelt
      * @return boolean
      * @since 2013-02-28
+     * @throws \RuntimeException
      */
     public function write()
     {
@@ -77,21 +79,30 @@ class ClassmapFilewriter
             return false;
         }
 
-        $data = '<?php' . PHP_EOL .
-            '/**' . PHP_EOL .
-            '* Created with Net\Bazzline\ClassmapGenerator' . PHP_EOL .
-            '*' . PHP_EOL .
-            '* Creationdate ' . date('Y-m-d') . ' ' . date('H:i:s') . PHP_EOL .
-            '*/' . PHP_EOL .
-            '' . PHP_EOL .
-            'return array(';
+        if (count($this->filedata) > 0) {
+            $head = '<?php' . PHP_EOL .
+                '/**' . PHP_EOL .
+                '* Created with Net\Bazzline\ClassmapGenerator' . PHP_EOL .
+                '*' . PHP_EOL .
+                '* Creationdate ' . date('Y-m-d') . ' ' . date('H:i:s') . PHP_EOL .
+                '*/' . PHP_EOL .
+                '' . PHP_EOL .
+                'return array(';
+            $filedata = '';
 
-        foreach ($this->filedata as $fileName => $className) {
-            $data .= PHP_EOL . '    \'' . $fileName . '\' => \'' . $className . '\',';
+            foreach ($this->filedata as $fileName => $className) {
+                $filedata .= PHP_EOL . '    \'' . $fileName . '\' => \'' . $className . '\',';
+            }
+
+            if (strlen($filedata) > 0) {
+                $filedata = substr($filedata, 0, -1) . PHP_EOL;
+            }
+
+            $bottom = ');';
+
+            return (file_put_contents($this->filepath, $head . $filedata . $bottom) !== false);
+        } else {
+            return false;
         }
-        $data = substr($data, 0, -1) . PHP_EOL;
-        $data .= ');';
-
-        return (file_put_contents($this->filepath, $data) !== false);
     }
 }

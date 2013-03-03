@@ -8,6 +8,8 @@ use Net\Bazzline\ClassmapGenerator\View\InfoView;
 use Net\Bazzline\ClassmapGenerator\Command\ConfigtestCommand;
 use Net\Bazzline\ClassmapGenerator\Command\CreateCommand;
 use Net\Bazzline\ClassmapGenerator\Command\HelpCommand;
+use Net\Bazzline\ClassmapGenerator\Validate\CliValidate;
+use Net\Bazzline\ClassmapGenerator\Validate\ArgumentValidate;
 
 /**
  * @author stev leibelt
@@ -35,7 +37,7 @@ class Application implements ApplicationInterface
     private function __construct(array $configuration = array())
     {
         if (date_default_timezone_get() === false) {
-            date_default_timezone_set('Europe/Berlin');
+            date_default_timezone_set($configuration['defaultTimezone']);
         }
         $this->configuration = $configuration;
     }
@@ -64,19 +66,25 @@ class Application implements ApplicationInterface
 
         $this->validateCliMode();
         $this->validateArguments($argc, $argv);
+        $this->mergeConfigurationWithProjectConfigurationIfAvailable();
 
         switch ($argv[1]) {
             case self::ARGUMENT_CONFIGTEST:
                 $this->executeConfigvalidation();
                 break;
             case self::ARGUMENT_FORCE:
-                $this->executeCreate(true);
+                $haltOnError = true;
+                $forceWriting = true;
+                $this->executeConfigvalidation($haltOnError);
+                $this->executeCreate($forceWriting);
                 break;
             case self::ARGUMENT_HELP:
                 $this->executeHelp();
                 break;
             case self::ARGUMENT_CREATE:
             default:
+                $haltOnError = true;
+                $this->executeConfigvalidation($haltOnError);
                 $this->executeCreate();
                 break;
         }
@@ -103,17 +111,17 @@ class Application implements ApplicationInterface
 
     /**
      * @author stev leibelt
+     * @param boolean $forceWriting
      * @since 2013-02-27
      */
-    private function executeCreate($force = false)
+    private function executeCreate($forceWriting = false)
     {
-        $this->executeConfigvalidation(true);
-
         $command = new CreateCommand();
         $command->setView(new InfoView());
-        $command->setForce($force);
+        $command->setForce($forceWriting);
         $command->setBasePath($this->configuration['path']['base']);
         $command->setOutputpath($this->configuration['path']['classmap']);
+        $command->setFilename($this->configuration['name']['classmap']);
         $command->setWhitelistDirectories($this->configuration['path']['whitelist']);
         $command->setBlacklistDirectories($this->configuration['path']['blacklist']);
         $command->execute();
@@ -136,7 +144,8 @@ class Application implements ApplicationInterface
      */
     private function validateCliMode()
     {
-        if (PHP_SAPI !== 'cli') {
+        $cliValidate = new CliValidate();
+        if (!$cliValidate->isValid()) {
             $view = new ErrorView();
             $view->addData('Script has to run in cli mode.');
 
@@ -160,10 +169,27 @@ class Application implements ApplicationInterface
             self::ARGUMENT_HELP
         );
 
-        if (($numberOfArguments < 2)
-            || (!in_array($argumentValues[1], $validArguments))) {
+        $argumentValidate = new ArgumentValidate();
+        if (!$argumentValidate->isValid($validArguments)) {
             $this->executeHelp();
             exit (1);
+        }
+    }
+
+
+
+    /**
+     * @author stev leibelt
+     * @since 2013-03-02
+     */
+    private function mergeConfigurationWithProjectConfigurationIfAvailable()
+    {
+        $isProjectConfigurationAvailable = ((isset($this->configuration['name']))
+            && (isset($this->configuration['name']['projectConfiguration']))
+            && (is_file($this->configuration['name']['projectConfiguration'])));
+
+        if ($isProjectConfigurationAvailable) {
+            $this->configuration = array_replace_recursive($this->configuration, require $this->configuration['name']['projectConfiguration']);
         }
     }
 }

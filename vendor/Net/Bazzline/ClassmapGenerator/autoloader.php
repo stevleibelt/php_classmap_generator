@@ -8,11 +8,11 @@ function autoloadFromFilesystem($className)
 {
     $fileName = str_replace('\\', DIRECTORY_SEPARATOR, $className) . '.php';
     $includePaths = array(
-        '../..'
+        '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..'
     );
 
     foreach ($includePaths as $includePath) {
-        $filePath = $includePath . DIRECTORY_SEPARATOR . $fileName;
+        $filePath = realpath($includePath . DIRECTORY_SEPARATOR . $fileName);
 
         if (file_exists($filePath)) {
             require $filePath;
@@ -29,7 +29,6 @@ function autoloadFromFilesystem($className)
  */
 function autoloadFromFilesystemWithClassmap($classname)
 {
-    $fileName = str_replace('\\', DIRECTORY_SEPARATOR, $classname) . '.php';
     $classnameToFilepath = require 'autoloader_classmap.php';
 
     if (isset($classnameToFilepath[$classname])) {

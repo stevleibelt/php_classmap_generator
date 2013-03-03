@@ -2,7 +2,7 @@
 
 namespace Net\Bazzline\ClassmapGenerator\Command;
 
-use Net\Bazzline\ClassmapGenerator\Configuration\ConfigurationValidator;
+use Net\Bazzline\ClassmapGenerator\Validate\ConfigurationValidate;
 
 /**
  * @author stev leibelt
@@ -39,7 +39,7 @@ class ConfigtestCommand extends CommandAbstract
      */
     public function execute() 
     {
-        $configurationValidator = new ConfigurationValidator();
+        $configurationValidator = new ConfigurationValidate();
         if (!$configurationValidator->isValid($this->configuration)) {
             $view = $this->getView();
             $view->addData('You configuration is not valid.');

@@ -2,8 +2,8 @@
 
 namespace Net\Bazzline\ClassmapGenerator\Command;
 
-use Net\Bazzline\ClassmapGenerator\Filesystem\ClassmapFilewriter;
-use Net\Bazzline\ClassmapGenerator\Filesystem\FilepathIterator;
+use Net\Bazzline\ClassmapGenerator\Factory\FilepathIteratorFactory;
+use Net\Bazzline\ClassmapGenerator\Factory\ClassmapFilewriterFactory;
 
 /**
  * @author stev leibelt
@@ -52,6 +52,13 @@ class CreateCommand extends CommandAbstract
      * @var array
      */
     private $classMapContent;
+
+    /**
+     * @author stev leibelt
+     * @since 2013-03-03
+     * @var string 
+     */
+    private $classMapFileName;
 
     /**
      * @author stev leibelt
@@ -119,6 +126,16 @@ class CreateCommand extends CommandAbstract
 
     /**
      * @author stev leibelt
+     * @param string $filename
+     * @since 2013-03-03
+     */
+    public function setFilename($filename)
+    {
+        $this->classMapFileName = (string) $filename;
+    }
+
+    /**
+     * @author stev leibelt
      * @return boolean $force
      * @since 2013-02-28
      */
@@ -138,32 +155,20 @@ class CreateCommand extends CommandAbstract
         $view->addData('Overwrite if file exists (yes/no): ' . ($this->isForced() ? 'yes' : 'no'));
         $view->addData('');
 
-        $filepathIterator = new FilepathIterator();
-        $filepathIterator->setBlacklistedDirectories($this->blacklistedDirectories);
-        $filepathIterator->setBasepath($this->basePath);
+        $filepathIterator = FilepathIteratorFactory::create(
+            array(
+                FilepathIteratorFactory::OPTION_BASE_PATH => $this->basePath,
+                FilepathIteratorFactory::OPTION_BLACKISTED_DIRECTORIES => $this->generatePaths($this->blacklistedDirectories),
+                FilepathIteratorFactory::OPTION_WHITELISTED_DIRECTORIES => $this->generatePaths($this->whitelistedDirectories)
+            )
+        );
 
-        foreach ($this->whitelistedDirectories as $directory => $directoryPaths) {
-            foreach ($directoryPaths as $directoryPath) {
-                if ($directoryPath === '*') {
-                    $filepathIterator->addPath(
-                        $this->basePath . DIRECTORY_SEPARATOR .
-                        $directory
-                    );
-                } else {
-                    $filepathIterator->addPath(
-                        $this->basePath . DIRECTORY_SEPARATOR .
-                        $directory . DIRECTORY_SEPARATOR .
-                        $directoryPath
-                    );
-                }
-            }
-        }
-
-        $classmapFileContent = $filepathIterator->iterate();
-
-        $classmapFileWriter = new ClassmapFilewriter();
-        $classmapFileWriter->setClassmapFilepath(dirname(__DIR__) . DIRECTORY_SEPARATOR . $this->outputPath);
-        $classmapFileWriter->setFiledata($classmapFileContent);
+        $classmapFileWriter = ClassmapFilewriterFactory::create(
+            array(
+                ClassmapFilewriterFactory::OPTION_FILE_DATA => $filepathIterator->iterate(),
+                ClassmapFilewriterFactory::OPTION_FILE_PATH => realpath($this->outputPath) . DIRECTORY_SEPARATOR . $this->classMapFileName
+            )
+        );
         if ($classmapFileWriter->fileExists()) {
             if ($this->isForced()) {
                 $view->addData(($classmapFileWriter->overwrite()) ? 'classmap written' : 'classmap was not written');
@@ -177,5 +182,36 @@ class CreateCommand extends CommandAbstract
         $view->addData('');
         $view->addData('done');
         $view->render();
+    }
+    
+    
+    
+    /**
+     * @author stev leibelt
+     * @param array $paths
+     * @param string $parentDirectory
+     * @return array
+     * @since 2013-03-02
+     */
+    private function generatePaths($paths, $parentDirectory = '')
+    {
+        $generatedPaths = array();
+
+        if ($parentDirectory !== '') {
+            $parentDirectory .= DIRECTORY_SEPARATOR;
+        }
+
+        foreach ($paths as $currentPath => $belowPath) {
+            $currentWorkingPath = $parentDirectory . $currentPath;
+            if (is_array($belowPath)) {
+                $generatedPaths = array_merge($generatedPaths, $this->generatePaths($belowPath, $currentWorkingPath));
+            } else if ($belowPath !== '*') {
+                $generatedPaths[] = $currentWorkingPath . DIRECTORY_SEPARATOR . $belowPath;
+            } else {
+                $generatedPaths[] = $currentWorkingPath;
+            }
+        }
+
+        return $generatedPaths;
     }
 }
