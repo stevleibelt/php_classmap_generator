@@ -73,7 +73,7 @@ class Application implements CliApplicationInterface
         global $argc;
 
         $this->validateCliMode();
-        $this->validateArguments($argc, $argv);
+        $this->validateArguments($argv);
         $this->mergeConfigurationWithProjectConfigurationIfAvailable();
 
         switch ($argv[1]) {
@@ -167,23 +167,23 @@ class Application implements CliApplicationInterface
 
     /**
      * @author stev leibelt
-     * @param integer $numberOfArguments
      * @param array $argumentValues
      * @since 2013-02-27
      */
-    private function validateArguments($numberOfArguments, $argumentValues)
+    private function validateArguments($argumentValues)
     {
-        $validArguments = array(
-            self::ARGUMENT_CONFIGTEST,
-            self::ARGUMENT_CREATE,
-            self::ARGUMENT_FORCE,
-            self::ARGUMENT_HELP
+        $data = array(
+            ArgumentValidate::DATA_ARGUMENT_VALUES => $argumentValues,
+            ArgumentValidate::DATA_VALID_ARGUMENTS => array(
+                self::ARGUMENT_CONFIGTEST,
+                self::ARGUMENT_CREATE,
+                self::ARGUMENT_FORCE,
+                self::ARGUMENT_HELP
+            )
         );
 
         $argumentValidate = new ArgumentValidate();
-        $argumentValidate->setData(array());
-        if (($numberOfArguments != 2)
-            || !$argumentValidate->isValid($validArguments)) {
+        if ($argumentValidate->isValid($data)) {
             $this->executeHelp();
             exit (1);
         }

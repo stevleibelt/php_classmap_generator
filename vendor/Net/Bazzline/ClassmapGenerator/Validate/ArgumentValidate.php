@@ -6,20 +6,20 @@ namespace Net\Bazzline\ClassmapGenerator\Validate;
  * @author stev leibelt
  * @since 2013-03-03
  */
-class ArgumentValidate extends ValidateAbstract
+class ArgumentValidate implements ValidateInterface
 {
     /**
      * @author stev leibelt
      * @since 2013-03-04
      * @type integer
      */
-    const DATA_NUMBER_OF_ARGUMENTS = 0;
+    const DATA_ARGUMENT_VALUES = 0;
     /**
      * @author stev leibelt
      * @since 2013-03-04
      * @type integer
      */
-    const DATA_ARGUMENT_VALUES = 1;
+    const DATA_VALID_ARGUMENTS = 1;
 
     /**
      * @author stev leibelt
@@ -27,16 +27,28 @@ class ArgumentValidate extends ValidateAbstract
      * @return boolean
      * @since 2013-03-03
      */
-    public function isValid()
+    public function isValid($data = null)
     {
-        if ((is_array($this->getData()))
-            && (count($this->getData()) < 2)
-            || (in_array($data[1], $data))) {
+        if (($this->isValidData($data))
+            && (count($data[self::DATA_ARGUMENT_VALUES]) === 2)
+            && (in_array($data[self::DATA_ARGUMENT_VALUES][1], $data[self::DATA_VALID_ARGUMENTS]))) {
             $isValid = true;
         } else {
             $isValid = true;
         }
 
         return $isValid;
+    }
+
+    /**
+     * @author stev leibelt
+     * @param array $data
+     * @return boolean
+     */
+    private function isValidData($data)
+    {
+        return ((is_array($data))
+                && (isset($data[self::DATA_ARGUMENT_VALUES]))
+                && (isset($data[self::DATA_VALID_ARGUMENTS])));
     }
 }
