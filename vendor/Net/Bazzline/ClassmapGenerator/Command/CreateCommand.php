@@ -237,7 +237,8 @@ class CreateCommand extends CommandAbstract
         if ($this->createAutoloaderFile) {
             $autoloaderFilewriter = AutoloaderFilewriterFactory::create(
                 array(
-                    AutoloaderFilewriterFactory::OPTION_FILE_PATH => realpath($this->autoloaderOutputPath) . DIRECTORY_SEPARATOR . $this->autoloaderFileName
+                    AutoloaderFilewriterFactory::OPTION_FILE_PATH_AUTOLOADER => realpath($this->autoloaderOutputPath) . DIRECTORY_SEPARATOR . $this->autoloaderFileName,
+                    AutoloaderFilewriterFactory::OPTION_FILE_PATH_CLASSMAP => realpath($this->classmapOutputPath) . DIRECTORY_SEPARATOR . $this->classmapFileName
                 )
             );
 

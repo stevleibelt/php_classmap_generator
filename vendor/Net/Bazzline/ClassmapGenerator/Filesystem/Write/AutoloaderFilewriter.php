@@ -10,6 +10,33 @@ class AutoloaderFilewriter extends FilewriterAbstract
 {
     /**
      * @author stev leibelt
+     * @since 2013-03-05
+     * @var string 
+     */
+    private $filePathClassmap;
+
+    /**
+     * @author stev leiblet
+     * @param string $filePathClassmap
+     * @since 2013-03-05
+     */
+    public function setFilePathClassmap($filePathClassmap)
+    {
+        $this->filePathClassmap = $filePathClassmap;
+    }
+
+    /**
+     * @author stev leiblet
+     * @return string
+     * @since 2013-03-05
+     */
+    public function getFilePathClassmap()
+    {
+        return $this->filePathClassmap;
+    }
+
+    /**
+     * @author stev leibelt
      * @return boolean
      * @since 22013-03-03
      * @throws \RuntimeException
@@ -51,6 +78,13 @@ function autoloadFromFilesystem_$uniqueIdentifier(\$className)
         }
     }
 }
+EOC;
+
+        if (file_exists($this->getFilePathClassmap())) {
+            $startPositionOfFilename = strrpos($this->getFilePathClassmap(), DIRECTORY_SEPARATOR) + strlen(DIRECTORY_SEPARATOR);
+            $fileNameClassmap = substr($this->getFilePathClassmap(), $startPositionOfFilename);
+            $data .= <<<EOC
+
 
 /**
  * @author stev leibelt
@@ -59,7 +93,7 @@ function autoloadFromFilesystem_$uniqueIdentifier(\$className)
  */
 function autoloadFromFilesystemWithClassmap_$uniqueIdentifier(\$classname)
 {
-    \$classnameToFilepath = require 'autoloader_classmap.php';
+    \$classnameToFilepath = require '$fileNameClassmap';
 
     if (isset(\$classnameToFilepath[\$classname])) {
         require \$classnameToFilepath[\$classname];
@@ -68,9 +102,13 @@ function autoloadFromFilesystemWithClassmap_$uniqueIdentifier(\$classname)
     }
 }
 
-if (file_exists('autoloader_classmap.php')) {
+if (file_exists('$fileNameClassmap')) {
     spl_autoload_register('autoloadFromFilesystemWithClassmap_$uniqueIdentifier');
 }
+
+EOC;
+        }
+        $data .= <<<EOC
 spl_autoload_register('autoloadFromFilesystem_$uniqueIdentifier');
 EOC;
 

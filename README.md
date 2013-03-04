@@ -1,7 +1,7 @@
 php_classmap_generator
 ======================
 
-simple psr-2 classmap generator
+php classmap and autoloader generator
 
 Manual
 ==============
@@ -63,4 +63,3 @@ return = array(
     'defaultTimezone' => 'Europe/Berlin' //if no timezone is set
 );
 ```
-'createAutoloaderFile' => false,
