@@ -4,23 +4,20 @@
  * @since 2013-02-27
  */
 return array(
-    'createAutoloaderFile' => false,
+    'createAutoloaderFile' => true,
     'name' => array(
-        'classmap' => 'net_bazzline_classmap_generator_autoloader_classmap.php',
-        'autoloader' => 'net_bazzline_classmap_generator_autoloader.php',
+        'classmap' => 'autoloader_classmap.php',
+        'autoloader' => 'autoloader.php',
         'projectConfiguration' => 'classmap_generator_configuration.php'
     ),
     'path' => array(
         'whitelist' => array(
-            'vendor' => '*'
+            '.' => '*'
         ),
         'blacklist' => array(
             '.' => '*',
             '..' => '*',
-            'data' => '*',
-            '.git' => '*',
-            'nbproject' => '*',
-            'install' => '*'
+            'test' => '*'
         )
     ),
     'defaultTimezone' => 'Europe/Berlin'

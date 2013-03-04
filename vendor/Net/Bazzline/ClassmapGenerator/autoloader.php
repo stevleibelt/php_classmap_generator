@@ -1,7 +1,7 @@
 <?php
 /**
  * Created with Net\Bazzline\ClassmapGenerator
- * Creationdate 2013-03-03 22:15:48
+ * Creationdate 2013-03-05 00:42:17
  */
 
 /**
@@ -9,7 +9,7 @@
  * @param string $className
  * @since 2013-02-27
  */
-function autoloadFromFilesystem_66b5698bbef0fe578bde446269223ed37b838ca3($className)
+function autoloadFromFilesystem_41a6ccee4d5d979701192268897425732dfb18e8($className)
 {
     $fileName = str_replace('\\', DIRECTORY_SEPARATOR, $className) . '.php';
     $includePaths = array(
@@ -32,19 +32,18 @@ function autoloadFromFilesystem_66b5698bbef0fe578bde446269223ed37b838ca3($classN
  * @param string $className
  * @since 2013-02-28
  */
-function autoloadFromFilesystemWithClassmap_66b5698bbef0fe578bde446269223ed37b838ca3($classname)
+function autoloadFromFilesystemWithClassmap_41a6ccee4d5d979701192268897425732dfb18e8($classname)
 {
     $classnameToFilepath = require 'autoloader_classmap.php';
-    $pathToProjectRoot = '../../../..';
 
     if (isset($classnameToFilepath[$classname])) {
-        require $pathToProjectRoot . DIRECTORY_SEPARATOR . $classnameToFilepath[$classname];
+        require $classnameToFilepath[$classname];
     } else {
         return false;
     }
 }
 
 if (file_exists('autoloader_classmap.php')) {
-    spl_autoload_register('autoloadFromFilesystemWithClassmap_66b5698bbef0fe578bde446269223ed37b838ca3');
+    spl_autoload_register('autoloadFromFilesystemWithClassmap_41a6ccee4d5d979701192268897425732dfb18e8');
 }
-spl_autoload_register('autoloadFromFilesystem_66b5698bbef0fe578bde446269223ed37b838ca3');
+spl_autoload_register('autoloadFromFilesystem_41a6ccee4d5d979701192268897425732dfb18e8');

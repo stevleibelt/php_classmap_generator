@@ -45,6 +45,8 @@ class Application implements CliApplicationInterface
         $this->configuration = require 'configuration.php';
         $this->userWorkingDirectory = $userWorkingDirectory;
 
+        $this->mergeConfigurationWithProjectConfigurationIfAvailable();
+
         if (date_default_timezone_get() === false) {
             date_default_timezone_set($this->configuration['defaultTimezone']);
         }
@@ -74,7 +76,6 @@ class Application implements CliApplicationInterface
 
         $this->validateCliMode();
         $this->validateArguments($argv);
-        $this->mergeConfigurationWithProjectConfigurationIfAvailable();
 
         switch ($argv[1]) {
             case self::ARGUMENT_CONFIGTEST:
