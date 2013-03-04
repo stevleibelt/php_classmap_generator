@@ -15,7 +15,7 @@ use Net\Bazzline\ClassmapGenerator\Validate\ArgumentValidate;
  * @author stev leibelt
  * @since 2013-02-27
  */
-class Application implements ApplicationInterface
+class Application implements CliApplicationInterface
 {
     const ARGUMENT_CREATE = 'create';
     const ARGUMENT_FORCE = 'force';
@@ -28,18 +28,26 @@ class Application implements ApplicationInterface
      * @var array
      */
     private $configuration;
+    /**
+     * @author stev leibelt
+     * @since 2013-03.04
+     * @var string
+     */
+    private $userWorkingDirectory;
 
     /**
      * @author stev leibelt
      * @param array $configuration
      * @since 2013-02-27
      */
-    private function __construct(array $configuration = array())
+    private function __construct($userWorkingDirectory)
     {
+        $this->configuration = require 'configuration.php';
+        $this->userWorkingDirectory = $userWorkingDirectory;
+
         if (date_default_timezone_get() === false) {
-            date_default_timezone_set($configuration['defaultTimezone']);
+            date_default_timezone_set($this->configuration['defaultTimezone']);
         }
-        $this->configuration = $configuration;
     }
 
     /**
@@ -48,9 +56,9 @@ class Application implements ApplicationInterface
      * @return \Net\Bazzline\ClassmapGenerator\Application\Application
      * @since 2013-02-27
      */
-    public static function create(array $configuration = array())
+    public static function create($userWorkingDirectory)
     {
-        $application = new self($configuration);
+        $application = new self($userWorkingDirectory);
 
         return $application;
     }
@@ -173,7 +181,9 @@ class Application implements ApplicationInterface
         );
 
         $argumentValidate = new ArgumentValidate();
-        if (!$argumentValidate->isValid($validArguments)) {
+        $argumentValidate->setData(array());
+        if (($numberOfArguments != 2)
+            || !$argumentValidate->isValid($validArguments)) {
             $this->executeHelp();
             exit (1);
         }
