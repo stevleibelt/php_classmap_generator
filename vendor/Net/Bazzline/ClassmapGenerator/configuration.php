@@ -6,14 +6,11 @@
 return array(
     'createAutoloaderFile' => false,
     'name' => array(
-        'classmap' => 'autoloader_classmap.php',
-        'autoloader' => 'autoloader.php',
+        'classmap' => 'net_bazzline_classmap_generator_autoloader_classmap.php',
+        'autoloader' => 'net_bazzline_classmap_generator_autoloader.php',
         'projectConfiguration' => 'classmap_generator_configuration.php'
     ),
     'path' => array(
-        'base' => '.',
-        'classmap' => '.',
-        'autoloader' => '.',
         'whitelist' => array(
             'vendor' => '*'
         ),

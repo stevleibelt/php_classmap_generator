@@ -6,9 +6,6 @@
 return array(
     'createAutoloaderFile' => true,
     'path' => array(
-        'base' => '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..',
-        'classmap' => '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..',
-        'autoloader' => '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR,
         'whitelist' => array(
             //example for adding directory relative to base 
             //'application' => '*',

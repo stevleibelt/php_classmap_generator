@@ -127,14 +127,14 @@ class Application implements CliApplicationInterface
         $command = new CreateCommand();
         $command->setView(new InfoView());
         $command->setForce($forceWriting);
-        $command->setBasePath($this->configuration['path']['base']);
-        $command->setClassmapOutputpath($this->configuration['path']['classmap']);
+        $command->setBasePath($this->userWorkingDirectory);
+        $command->setClassmapOutputpath($this->userWorkingDirectory);
         $command->setClassmapFilename($this->configuration['name']['classmap']);
         $command->setWhitelistDirectories($this->configuration['path']['whitelist']);
         $command->setBlacklistDirectories($this->configuration['path']['blacklist']);
         $command->setCreateAutloaderFile($this->configuration['createAutoloaderFile']);
         $command->setAutoloaderFilename($this->configuration['name']['autoloader']);
-        $command->setAutoloaderOutputpath($this->configuration['path']['autoloader']);
+        $command->setAutoloaderOutputpath($this->userWorkingDirectory);
         $command->execute();
     }
 
@@ -183,7 +183,7 @@ class Application implements CliApplicationInterface
         );
 
         $argumentValidate = new ArgumentValidate();
-        if ($argumentValidate->isValid($data)) {
+        if (!$argumentValidate->isValid($data)) {
             $this->executeHelp();
             exit (1);
         }
@@ -199,10 +199,15 @@ class Application implements CliApplicationInterface
     {
         $isProjectConfigurationAvailable = ((isset($this->configuration['name']))
             && (isset($this->configuration['name']['projectConfiguration']))
-            && (is_file($this->configuration['name']['projectConfiguration'])));
+            && (is_file($this->userWorkingDirectory . DIRECTORY_SEPARATOR . $this->configuration['name']['projectConfiguration'])));
 
         if ($isProjectConfigurationAvailable) {
-            $this->configuration = array_replace_recursive($this->configuration, require $this->configuration['name']['projectConfiguration']);
+            $this->configuration = array_replace_recursive(
+                $this->configuration, 
+                require $this->userWorkingDirectory . 
+                    DIRECTORY_SEPARATOR . 
+                    $this->configuration['name']['projectConfiguration']
+            );
         }
     }
 }

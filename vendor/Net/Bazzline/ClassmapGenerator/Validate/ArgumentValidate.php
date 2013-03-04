@@ -29,15 +29,9 @@ class ArgumentValidate implements ValidateInterface
      */
     public function isValid($data = null)
     {
-        if (($this->isValidData($data))
+        return (($this->isValidData($data))
             && (count($data[self::DATA_ARGUMENT_VALUES]) === 2)
-            && (in_array($data[self::DATA_ARGUMENT_VALUES][1], $data[self::DATA_VALID_ARGUMENTS]))) {
-            $isValid = true;
-        } else {
-            $isValid = true;
-        }
-
-        return $isValid;
+            && (in_array($data[self::DATA_ARGUMENT_VALUES][1], $data[self::DATA_VALID_ARGUMENTS])));
     }
 
     /**
