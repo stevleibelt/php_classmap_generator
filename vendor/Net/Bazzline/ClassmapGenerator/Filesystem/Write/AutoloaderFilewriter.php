@@ -11,7 +11,7 @@ class AutoloaderFilewriter extends FilewriterAbstract
     /**
      * @author stev leibelt
      * @since 2013-03-05
-     * @var string 
+     * @var string
      */
     private $filePathClassmap;
 
@@ -65,7 +65,7 @@ function autoloadFromFilesystem_$uniqueIdentifier(\$className)
 {
     \$fileName = str_replace('\\\\', DIRECTORY_SEPARATOR, \$className) . '.php';
     \$includePaths = array(
-        '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..'
+        realpath(__DIR__ . DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR
     );
 
     foreach (\$includePaths as \$includePath) {
