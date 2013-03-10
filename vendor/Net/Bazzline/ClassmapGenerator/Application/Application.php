@@ -211,6 +211,5 @@ class Application implements CliApplicationInterface
                 $projectConfiguration['net_bazzline']
             );
         }
-exit(var_export($this->configuration, true));
     }
 }
