@@ -203,12 +203,14 @@ class Application implements CliApplicationInterface
             && (is_file($this->userWorkingDirectory . DIRECTORY_SEPARATOR . $this->configuration['name']['projectConfiguration'])));
 
         if ($isProjectConfigurationAvailable) {
+            $projectConfiguration = require $this->userWorkingDirectory . 
+                    DIRECTORY_SEPARATOR . 
+                    $this->configuration['name']['projectConfiguration'];
             $this->configuration = array_replace_recursive(
                 $this->configuration, 
-                require $this->userWorkingDirectory . 
-                    DIRECTORY_SEPARATOR . 
-                    $this->configuration['name']['projectConfiguration']
+                $projectConfiguration['net_bazzline']
             );
         }
+exit(var_export($this->configuration, true));
     }
 }
