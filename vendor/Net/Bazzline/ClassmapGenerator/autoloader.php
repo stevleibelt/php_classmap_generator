@@ -13,7 +13,7 @@ function autoloadFromFilesystem_41a6ccee4d5d979701192268897425732dfb18e8($classN
 {
     $fileName = str_replace('\\', DIRECTORY_SEPARATOR, $className) . '.php';
     $includePaths = array(
-        '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..'
+        realpath(__DIR__ . DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR
     );
 
     foreach ($includePaths as $includePath) {

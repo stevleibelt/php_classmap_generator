@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://www.phpunit.de/manual/current/en/appendixes.configuration.html -->
+<phpunit bootstrap="tests/bootstrap.php"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="false"
+         cacheTokens="false"
+         colors="true"
+         processIsolation="true"
+         backupGlobals="false"
+         stopOnError="false"
+         stopOnFailure="false"
+         stopOnIncomplete="false"
+         stopOnSkipped="false"
+         verbose="true">
+    <php>
+        <includePath>.:../*</includePath>
+    </php>
+    <testsuites>
+        <testsuite name="Application">
+            <directory>vendor/Net/Bazzline/ClassmapGenerator/Application/ApplicationTest.php</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>
