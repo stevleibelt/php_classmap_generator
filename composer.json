@@ -3,7 +3,7 @@
 	"description": "Classmap generator for php files",
 	"keywords": ["classmap", "generator", "namespace", "interface", "class", "abstract", "psr"],
 	"homepage": "https://github.com/stevleibelt/php_classmap_generator", 
-	"license", "MIT",
+	"license": "MIT",
 	"authors": [
 		{
 			"name": "Stev leibelt",
