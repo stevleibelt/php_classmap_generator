@@ -5,6 +5,9 @@
  */
 return array(
     'createAutoloaderFile' => true,
+    'command' => array(
+        'help'
+    )
     'name' => array(
         'classmap' => 'autoloader_classmap.php',
         'autoloader' => 'autoloader.php',

@@ -11,11 +11,13 @@ use Net\Bazzline\ClassmapGenerator\Command\HelpCommand;
 use Net\Bazzline\ClassmapGenerator\Validate\CliValidate;
 use Net\Bazzline\ClassmapGenerator\Validate\ArgumentValidate;
 
+use Symfony\Component\Console\Application as SymfonyApplication;
+
 /**
  * @author stev leibelt
  * @since 2013-02-27
  */
-class Application implements CliApplicationInterface
+class Application extends SymfonyApplication
 {
     const ARGUMENT_CREATE = 'create';
     const ARGUMENT_FORCE = 'force';
@@ -40,8 +42,9 @@ class Application implements CliApplicationInterface
      * @param array $configuration
      * @since 2013-02-27
      */
-    private function __construct($userWorkingDirectory)
+    public function __construct($userWorkingDirectory)
     {
+        parent::__construct('classmap generator', '1.1');
         $this->configuration = require 'configuration.php';
         $this->userWorkingDirectory = $userWorkingDirectory;
 
@@ -50,6 +53,7 @@ class Application implements CliApplicationInterface
         if (date_default_timezone_get() === false) {
             date_default_timezone_set($this->configuration['defaultTimezone']);
         }
+        $this->add(new \Net\Bazzline\ClassmapGenerator\Command\HelpCommand());
     }
 
     /**

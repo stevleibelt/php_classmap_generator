@@ -2,17 +2,35 @@
 
 namespace Net\Bazzline\ClassmapGenerator\Command;
 
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+
 /**
  * @author stev leibelt
  * @since 2013-02-27
  */
-class HelpCommand extends CommandAbstract
+class HelpCommand extends Command
 {
     /**
      * @author stev leibelt
-     * @since 2013-02-28
+     * @since 2013-04-17
      */
-    public function execute()
+    protected function configure()
+    {
+        $this
+            ->setName('help')
+            ->setDescription('Show helpfull informations')
+        ;
+    }
+
+    /**
+     * @author stev leibelt
+     * @since 2013-04-17
+     */
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
         $data = array(
             'Invalid argument supplied.',
@@ -46,8 +64,8 @@ class HelpCommand extends CommandAbstract
             '        artodeto.bazzline.net'
         );
 
-        $view = $this->getView();
-        $view->setData($data);
-        $view->render();
+        foreach ($data as $outputLine) {
+            $output->writeln($outputLine);
+        }
     }
 }

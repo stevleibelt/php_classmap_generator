@@ -1,30 +1,33 @@
 #!/usr/bin/php
 <?php
+/**
+ * @author stev leibelt
+ * @since 2013-02-27
+ */
+namespace Net\Bazzline\ClassmapGenerator;
 
-use Net\Bazzline\ClassmapGenerator\Application;
-//use Net\Bazzline\ClassmapGenerator\Configuration;
-use Net\Bazzline\ClassmapGenerator\Command\CreateCommand;
 
-require __DIR__ . '/../autoloader.php';
+use Net\Bazzline\ClassmapGenerator\Command\HelpCommand;
+use Symfony\Component\Console\Application;
 
-$files = array(
-    __DIR__ . '/../autoload.php',
-    __DIR__ . '/../vendor/autoload.php',
-    __DIR__ . '/../../../autoload.php'
-);
+chdir(realpath(__DIR__ . DIRECTORY_SEPARATOR));
 
-foreach ($files as $file) {
-    if (file_exists($file)) {
-        require_once $file;
-        break;
-    }
-}
+require '../vendor/autoload.php';
+require '../src/Net/Bazzline/ClassmapGenerator/Command/HelpCommand.php';
 
-$configuration = new Config(getcwd());
+$application = new Application();
+$application->add(new HelpCommand());
+$application->run();
 
-if ($configuration->hasBootstrapPathname()) {
-    require_once $configuration->getBootstrapPathname();
-}
+/*
+$userWorkingDirectory = getcwd();
+//make everything relative to the application root
+chdir(realpath(__DIR__ . DIRECTORY_SEPARATOR));
+require_once __DIR__ . '/../autoloader.php';
+
+Application\Application::create($userWorkingDirectory)
+    ->andRun();
 
 $application = new Application($configuration);
 $application->run();
+*/
