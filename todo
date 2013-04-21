@@ -9,3 +9,9 @@ migrate config to symfony component if needed
 
 #filesystem
 migrate filesystemstuff used in create command to symfony component if needed
+
+#application
+check if getcwd() is still needed
+
+#test
+write them

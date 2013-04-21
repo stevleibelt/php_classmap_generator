@@ -78,42 +78,6 @@ class Application extends SymfonyApplication
      * @author stev leibelt
      * @since 2013-02-27
      */
-    public function andRun()
-    {
-        global $argv;
-        global $argc;
-
-        $this->validateCliMode();
-        $this->validateArguments($argv);
-
-        switch ($argv[1]) {
-            case self::ARGUMENT_CONFIGTEST:
-                $this->executeConfigvalidation();
-                break;
-            case self::ARGUMENT_FORCE:
-                $haltOnError = true;
-                $forceWriting = true;
-                $this->executeConfigvalidation($haltOnError);
-                $this->executeCreate($forceWriting);
-                break;
-            case self::ARGUMENT_HELP:
-                $this->executeHelp();
-                break;
-            case self::ARGUMENT_CREATE:
-            default:
-                $haltOnError = true;
-                $this->executeConfigvalidation($haltOnError);
-                $this->executeCreate();
-                break;
-        }
-
-        exit (0);
-    }
-
-    /**
-     * @author stev leibelt
-     * @since 2013-02-27
-     */
     private function executeConfigvalidation($haltOnError = false)
     {
         $command = new ConfigtestCommand();
@@ -147,59 +111,6 @@ class Application extends SymfonyApplication
         $command->setAutoloaderOutputpath($this->userWorkingDirectory);
         $command->execute();
     }
-
-    /**
-     * @author stev leibelt
-     * @since 2013-02-27
-     */
-    private function executeHelp()
-    {
-        $command = new ManualCommand();
-        $command->setView(new HelpView());
-        $command->execute();
-    }
-
-    /**
-     * @author stev leibelt
-     * @since 2013-02-27
-     */
-    private function validateCliMode()
-    {
-        $cliValidate = new CliValidate();
-        if (!$cliValidate->isValid()) {
-            $view = new ErrorView();
-            $view->addData('Script has to run in cli mode.');
-
-            $view->render();
-            exit (1);
-        }
-    }
-
-    /**
-     * @author stev leibelt
-     * @param array $argumentValues
-     * @since 2013-02-27
-     */
-    private function validateArguments($argumentValues)
-    {
-        $data = array(
-            ArgumentValidate::DATA_ARGUMENT_VALUES => $argumentValues,
-            ArgumentValidate::DATA_VALID_ARGUMENTS => array(
-                self::ARGUMENT_CONFIGTEST,
-                self::ARGUMENT_CREATE,
-                self::ARGUMENT_FORCE,
-                self::ARGUMENT_HELP
-            )
-        );
-
-        $argumentValidate = new ArgumentValidate();
-        if (!$argumentValidate->isValid($data)) {
-            $this->executeHelp();
-            exit (1);
-        }
-    }
-
-
 
     /**
      * @author stev leibelt
