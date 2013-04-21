@@ -43,8 +43,8 @@ class ConfigureCommand extends CommandAbstract
     protected  function configure()
     {
         $this
-            ->setName('configtest')
-            ->setDescription('Validates configuration')
+            ->setName('configure')
+            ->setDescription('Configures classmap generator')
         ;
     }
 
@@ -54,15 +54,26 @@ class ConfigureCommand extends CommandAbstract
      */
     public function execute() 
     {
-        $configurationValidator = new ConfigurationValidate();
-        if (!$configurationValidator->isValid($this->configuration)) {
-            $view = $this->getView();
-            $view->addData('You configuration is not valid.');
-            $view->render();
 
-            if ($this->haltOnError) {
-                exit (1);
-            }
-        }
+    }
+
+    private function askCreationOfAutoloaderFile()
+    {
+
+    }
+
+    private function askForFilenames()
+    {
+
+    }
+
+    private function askForPaths()
+    {
+
+    }
+
+    private function askForTimezone()
+    {
+
     }
 }
