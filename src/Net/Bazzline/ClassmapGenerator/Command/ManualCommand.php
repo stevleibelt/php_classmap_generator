@@ -12,7 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @author stev leibelt
  * @since 2013-02-27
  */
-class HelpCommand extends Command
+class ManualCommand extends Command
 {
     /**
      * @author stev leibelt
@@ -21,8 +21,8 @@ class HelpCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('help')
-            ->setDescription('Show helpfull informations')
+            ->setName('manual')
+            ->setDescription('Displays manual.')
         ;
     }
 
@@ -33,34 +33,34 @@ class HelpCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $data = array(
-            'Invalid argument supplied.',
+            '<comment>Invalid argument supplied.</comment>',
             '',
-            'Manual',
+            '<comment>Manual</comment>',
             '==============',
-            'NAME',
-            '        php - classmap generator for psr-2 based php projects',
-            'SYNOPSIS',
-            '        index.php [OPTION]',
-            'DESCRIPTION',
+            '<comment>NAME</comment>',
+            '        <info>php - classmap generator for psr-2 based php projects</info>',
+            '<comment>SYNOPSIS</comment>',
+            '        <info>index.php [OPTION]</info>',
+            '<comment>DESCRIPTION</comment>',
             '        Creates classmap by iterating over project directories.',
             '',
             '        Following options are available.',
             '',
-            '        create',
+            '        <info>create</info>',
             '            Creates classmap if no classmap file exists.',
-            '        force',
+            '        <info>force</info>',
             '            Creates classmap even if classmap file exists.',
-            '        configtest',
+            '        <info>configtest</info>',
             '            Tests configuration file.',
-            '        help',
+            '        <info>help</info>',
             '            Print this manual.',
-            'AUTHOR  ',
+            '<comment>AUTHOR</comment>',
             '        Written by Stev Leibelt',
             '',
-            'REPORTING BUGS',
+            '<comment>REPORTING BUGS</comment>',
             '        artodeto@arcor.de',
             '',
-            'SEE ALSO',
+            '<comment>SEE ALSO</comment>',
             '        artodeto.bazzline.net'
         );
 

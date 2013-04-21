@@ -2,6 +2,11 @@
 
 namespace Net\Bazzline\ClassmapGenerator\Command;
 
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 use Net\Bazzline\ClassmapGenerator\Factory\FilepathIteratorFactory;
 use Net\Bazzline\ClassmapGenerator\Factory\ClassmapFilewriterFactory;
 use Net\Bazzline\ClassmapGenerator\Factory\AutoloaderFilewriterFactory;
@@ -10,7 +15,7 @@ use Net\Bazzline\ClassmapGenerator\Factory\AutoloaderFilewriterFactory;
  * @author stev leibelt
  * @since 2013-02-27
  */
-class CreateCommand extends CommandAbstract
+class CreateCommand extends Command
 {
     /**
      * @author stev leibelt
@@ -88,6 +93,7 @@ class CreateCommand extends CommandAbstract
      */
     public function __construct()
     {
+        parent::__construct();
         $this->setForce(false);
         $this->setBasePath(getcwd());
         $this->setClassmapOutputpath(getcwd());
@@ -196,6 +202,18 @@ class CreateCommand extends CommandAbstract
     private function isForced()
     {
         return ($this->force === true);
+    }
+
+    /**
+     * @author stev leibelt
+     * @since 2013-04-21
+     */
+    protected  function configure()
+    {
+        $this
+            ->setName('create')
+            ->setDescription('Creates classmap.')
+        ;
     }
 
     /**

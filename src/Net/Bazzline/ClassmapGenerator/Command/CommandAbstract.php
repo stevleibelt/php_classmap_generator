@@ -2,37 +2,16 @@
 
 namespace Net\Bazzline\ClassmapGenerator\Command;
 
-use Net\Bazzline\ClassmapGenerator\View\ViewAbstract;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * @author stev leibelt
  * @since 2013-02-27
  */
-abstract class CommandAbstract implements CommandInterface
-{
-    /**
-     * @author stev leibelt
-     * @since 2013-02-28
-     * @var \Net\Bazzline\ClassmapGenerator\View\ViewAbstract 
-     */
-    private $view;
+abstract class CommandAbstract {
 
-    /**
-     * @author stev leibelt
-     * @since 2013-02-28
-     */
-    public function setView(ViewAbstract $view)
-    {
-        $this->view = $view;
-    }
-
-    /**
-     * @author stev leibelt
-     * @return \Net\Bazzline\ClassmapGenerator\View\ViewAbstract
-     * @since 2013-02-28
-     */
-    protected function getView()
-    {
-        return $this->view;
-    }
 }

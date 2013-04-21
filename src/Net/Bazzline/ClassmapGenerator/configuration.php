@@ -6,11 +6,13 @@
 return array(
     'createAutoloaderFile' => true,
     'command' => array(
-        'help'
-    )
+        '\Net\Bazzline\ClassmapGenerator\Command\ManualCommand',
+        '\Net\Bazzline\ClassmapGenerator\Command\CreateCommand',
+        '\Net\Bazzline\ClassmapGenerator\Command\ConfigtestCommand'
+    ),
     'name' => array(
         'classmap' => 'autoloader_classmap.php',
-        'autoloader' => 'autoloader.php',
+        'autoloader' => 'basicAutoloader.php',
         'projectConfiguration' => 'classmap_generator_configuration.php'
     ),
     'path' => array(

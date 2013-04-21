@@ -7,7 +7,7 @@ use Net\Bazzline\ClassmapGenerator\View\HelpView;
 use Net\Bazzline\ClassmapGenerator\View\InfoView;
 use Net\Bazzline\ClassmapGenerator\Command\ConfigtestCommand;
 use Net\Bazzline\ClassmapGenerator\Command\CreateCommand;
-use Net\Bazzline\ClassmapGenerator\Command\HelpCommand;
+use Net\Bazzline\ClassmapGenerator\Command\ManualCommand;
 use Net\Bazzline\ClassmapGenerator\Validate\CliValidate;
 use Net\Bazzline\ClassmapGenerator\Validate\ArgumentValidate;
 
@@ -23,6 +23,8 @@ class Application extends SymfonyApplication
     const ARGUMENT_FORCE = 'force';
     const ARGUMENT_CONFIGTEST = 'configtest';
     const ARGUMENT_HELP = 'help';
+    const VERSION = '1.1.0.1';
+    const NAME = 'classmap generator';
 
     /**
      * @author stev leibelt
@@ -44,8 +46,8 @@ class Application extends SymfonyApplication
      */
     public function __construct($userWorkingDirectory)
     {
-        parent::__construct('classmap generator', '1.1');
-        $this->configuration = require 'configuration.php';
+        parent::__construct(self::NAME, self::VERSION);
+        $this->configuration = require __DIR__ . '/../configuration.php';
         $this->userWorkingDirectory = $userWorkingDirectory;
 
         $this->mergeConfigurationWithProjectConfigurationIfAvailable();
@@ -53,7 +55,10 @@ class Application extends SymfonyApplication
         if (date_default_timezone_get() === false) {
             date_default_timezone_set($this->configuration['defaultTimezone']);
         }
-        $this->add(new \Net\Bazzline\ClassmapGenerator\Command\HelpCommand());
+
+        foreach ($this->getCommandsFromConfiguration() as $command) {
+            $this->add($command);
+        }
     }
 
     /**
@@ -149,7 +154,7 @@ class Application extends SymfonyApplication
      */
     private function executeHelp()
     {
-        $command = new HelpCommand();
+        $command = new ManualCommand();
         $command->setView(new HelpView());
         $command->execute();
     }
@@ -215,5 +220,23 @@ class Application extends SymfonyApplication
                 $projectConfiguration['net_bazzline']
             );
         }
+    }
+
+    /**
+     * @author stev leibelt
+     * @since 2013-04-21
+     * @return array
+     */
+    private function getCommandsFromConfiguration()
+    {
+        $commands = array();
+
+        foreach ($this->configuration['command'] as $className) {
+            if (class_exists($className)) {
+                $commands[] = new $className();
+            }
+        }
+
+        return $commands;
     }
 }

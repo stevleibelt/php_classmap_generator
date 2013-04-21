@@ -2,13 +2,19 @@
 
 namespace Net\Bazzline\ClassmapGenerator\Command;
 
+
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 use Net\Bazzline\ClassmapGenerator\Validate\ConfigurationValidate;
 
 /**
  * @author stev leibelt
  * @since 2013-02-27
  */
-class ConfigtestCommand extends CommandAbstract
+class ConfigtestCommand extends Command
 {
     private $configuration;
     private $haltOnError;
@@ -31,6 +37,18 @@ class ConfigtestCommand extends CommandAbstract
     public function setConfiguration(array $configuration)
     {
         $this->configuration = $configuration;
+    }
+
+    /**
+     * @author stev leibelt
+     * @since 2013-04-21
+     */
+    protected  function configure()
+    {
+        $this
+            ->setName('configtest')
+            ->setDescription('Validates configuration')
+        ;
     }
 
     /**
