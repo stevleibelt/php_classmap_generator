@@ -5,7 +5,7 @@ namespace Net\Bazzline\ClassmapGenerator\Application;
 use Net\Bazzline\ClassmapGenerator\View\ErrorView;
 use Net\Bazzline\ClassmapGenerator\View\HelpView;
 use Net\Bazzline\ClassmapGenerator\View\InfoView;
-use Net\Bazzline\ClassmapGenerator\Command\ConfigtestCommand;
+use Net\Bazzline\ClassmapGenerator\Command\ConfigureCommand;
 use Net\Bazzline\ClassmapGenerator\Command\CreateCommand;
 use Net\Bazzline\ClassmapGenerator\Command\ManualCommand;
 use Net\Bazzline\ClassmapGenerator\Validate\CliValidate;
@@ -19,10 +19,6 @@ use Symfony\Component\Console\Application as SymfonyApplication;
  */
 class Application extends SymfonyApplication
 {
-    const ARGUMENT_CREATE = 'create';
-    const ARGUMENT_FORCE = 'force';
-    const ARGUMENT_CONFIGTEST = 'configtest';
-    const ARGUMENT_HELP = 'help';
     const VERSION = '1.1.0.1';
     const NAME = 'classmap generator';
 
@@ -72,23 +68,6 @@ class Application extends SymfonyApplication
         $application = new self($userWorkingDirectory);
 
         return $application;
-    }
-
-    /**
-     * @author stev leibelt
-     * @since 2013-02-27
-     */
-    private function executeConfigvalidation($haltOnError = false)
-    {
-        $command = new ConfigtestCommand();
-        if ($haltOnError) {
-            $command->setView(new ErrorView());
-        } else {
-            $command->setView(new InfoView());
-        }
-        $command->setHaltOnError($haltOnError);
-        $command->setConfiguration($this->configuration);
-        $command->execute();
     }
 
     /**

@@ -8,7 +8,7 @@ return array(
     'command' => array(
         '\Net\Bazzline\ClassmapGenerator\Command\ManualCommand',
         '\Net\Bazzline\ClassmapGenerator\Command\CreateCommand',
-        '\Net\Bazzline\ClassmapGenerator\Command\ConfigtestCommand'
+        '\Net\Bazzline\ClassmapGenerator\Command\ConfigureCommand'
     ),
     'name' => array(
         'classmap' => 'autoloader_classmap.php',
