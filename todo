@@ -1,0 +1,11 @@
+#command
+migrade commands to symfony
+remove manual if needed
+remove configtest if needed
+refactor create (add argument force/overwrite/create class_map etc.)
+
+#config
+migrate config to symfony component if needed
+
+#filesystem
+migrate filesystemstuff used in create command to symfony component if needed
