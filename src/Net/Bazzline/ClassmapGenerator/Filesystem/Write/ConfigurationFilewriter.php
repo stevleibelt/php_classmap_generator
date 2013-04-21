@@ -35,43 +35,72 @@ return array (
         'defaultTimezone' => $defaultTimezone,
         'filename' => array (
 EOC;
-        foreach ($this->getDataValue('filename', array()) as $keyname => $filename) {
-            $data .= <<<EOC
-            '$keyname' => '$filename',
+        $filenames = $this->getDataValue('filename', array());
+        $numberOfFilenames = count($filenames);
+        $currentNumberOfFilename = 0;
+
+        if ($numberOfFilenames > 0) {
+            foreach ($filenames as $keyname => $filename) {
+                $lineEnding = (++$currentNumberOfFilename < $numberOfFilenames) ? ',' : '';
+                $data .= PHP_EOL . <<<EOC
+            '$keyname' => '$filename'$lineEnding
 EOC;
+            }
         }
 
-        $data .= <<<EOC
+        $data .= PHP_EOL . <<<EOC
         ),
         'filepath' => array (
 EOC;
-        foreach ($this->getDataValue('filepath', array()) as $keyname => $path) {
-            $data .= <<<EOC
-            '$keyname' => '$path',
+        $filepaths = $this->getDataValue('filepath', array());
+        $numberOfFilepaths = count($filepaths);
+        $currentNumberOfFilepath = 0;
+
+        if ($numberOfFilepaths > 0) {
+            foreach ($filepaths as $keyname => $path) {
+                $lineEnding = (++$currentNumberOfFilepath < $numberOfFilepaths) ? ',' : '';
+                $data .= PHP_EOL . <<<EOC
+            '$keyname' => '$path'$lineEnding
 EOC;
+            }
         }
 
-        $data .= <<<EOC
+        $data .= PHP_EOL . <<<EOC
         ),
         'blacklist' => array (
 EOC;
-        foreach ($this->getDataValue('blacklist', array()) as $path) {
-            $data .= <<<EOC
-            '$path' => '*',
+        $blacklistItems = $this->getDataValue('blacklist', array());
+        $numberOfBlacklistedItems = count($blacklistItems);
+        $currentNumberOfBlacklistedItem = 0;
+
+        if ($numberOfBlacklistedItems > 0) {
+            foreach ($blacklistItems as $path) {
+                $lineEnding = (++$currentNumberOfBlacklistedItem < $numberOfBlacklistedItems) ? ',' : '';
+                $data .= PHP_EOL . <<<EOC
+            '$path' => '*'$lineEnding
 EOC;
+            }
         }
 
-            $data .= <<<EOC
+            $data .= PHP_EOL . <<<EOC
         ),
         'whitelist' => array (
+
 EOC;
-        foreach ($this->getDataValue('whitelist', array()) as $path) {
-            $data .= <<<EOC
-            '$path' => '*',
+        $whitelistedItems = $this->getDataValue('whitelist', array());
+        $numberOfWhitelistedItems = count($whitelistedItems);
+        $currentNumberOfWhitelistedItem = 0;
+
+        if ($numberOfBlacklistedItems > 0) {
+            foreach ($whitelistedItems as $path) {
+                $lineEnding = (++$currentNumberOfWhitelistedItem < $numberOfWhitelistedItems) ? ',' : '';
+                $data .= PHP_EOL . <<<EOC
+            '$path' => '*'$lineEnding
 EOC;
+            }
         }
 
-        $data .= <<<EOC
+        $data .= PHP_EOL . <<<EOC
         )
     )
 );

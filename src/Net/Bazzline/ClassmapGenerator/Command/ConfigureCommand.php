@@ -41,13 +41,14 @@ class ConfigureCommand extends CommandAbstract
         $configuration['blacklist'] = $this->askForBlacklistPaths($input, $output);
         $configuration['createAutoloaderFile'] = $this->askCreationOfAutoloaderFile($input, $output);
         $configuration['defaultTimezone'] = $this->askForDefaultTimezone($input, $output);
+        $overwrite = $this->askForOverwriteIfFileExists($input, $output);
 
         $fileName = 'classmap_generator_configuration.php';
         $filePath = getcwd();
 
         $output->writeln('<info>Writing configuration to "' . $filePath .
             DIRECTORY_SEPARATOR . $fileName . '</info>');
-        if ($this->writeConfiguration($configuration, $fileName, $filePath)) {
+        if ($this->writeConfiguration($configuration, $fileName, $filePath, $overwrite)) {
             $output->writeln('<info>Configuration was written.</info>');
         } else {
             $output->writeln('<error>Configuration was not written.</error>');
@@ -59,16 +60,53 @@ class ConfigureCommand extends CommandAbstract
      * @param array $data
      * @param string $fileName
      * @param string $filePath
+     * @param boolean $overwrite
      * @return bool
      * @since 2013-04-21
      */
-    private function writeConfiguration(array $data, $fileName, $filePath)
+    private function writeConfiguration(array $data, $fileName, $filePath, $overwrite = false)
     {
         $writer = new ConfigurationFilewriter();
         $writer->setFilePath($filePath . DIRECTORY_SEPARATOR . $fileName);
         $writer->setFiledata($data);
 
-        return $writer->write();
+        if ($overwrite) {
+            return $writer->overwrite();
+        } else {
+            return $writer->write();
+        }
+    }
+
+    /**
+     * @author stev leibelt
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return bool
+     * @since 2013-04-22
+     */
+    private function askForOverwriteIfFileExists(InputInterface $input, OutputInterface $output)
+    {
+        $dialog = $this->getHelperSet()->get('dialog');
+        $default = 'n';
+
+        $overwriteIfFileExists = ($dialog->askAndValidate(
+            $output,
+            '<question>Should i overwrite the configuration file if it exists (y/n - default is "y")?</question>' . PHP_EOL,
+            function ($answer) {
+                if (($answer != '')
+                    && (!in_array($answer, array('y', 'n')))) {
+                    throw new RuntimeException(
+                        'y or n, please choose.'
+                    );
+                }
+
+                return $answer;
+            },
+            true,
+            $default
+        ) == 'y') ? true : false;
+
+        return $overwriteIfFileExists;
     }
 
     /**
@@ -81,13 +119,23 @@ class ConfigureCommand extends CommandAbstract
     private function askCreationOfAutoloaderFile(InputInterface $input, OutputInterface $output)
     {
         $dialog = $this->getHelperSet()->get('dialog');
-        $answerers = array('y', 'n');
+        $default = 'y';
 
-        $createAutoloaderFile = ($dialog->select(
+        $createAutoloaderFile = ($dialog->askAndValidate(
             $output,
-            '<question>Should i create a autoloader file?</question>',
-            $answerers,
-            0
+            '<question>Should i create a autoloader file (y/n - default is "y")?</question>' . PHP_EOL,
+            function ($answer) {
+                if (($answer != '')
+                    && (!in_array($answer, array('y', 'n')))) {
+                    throw new RuntimeException(
+                        'y or n, please choose.'
+                    );
+                }
+
+                return $answer;
+            },
+            true,
+            $default
         ) == 'y') ? true : false;
 
         return $createAutoloaderFile;
@@ -103,10 +151,13 @@ class ConfigureCommand extends CommandAbstract
     private function askForFilenames(InputInterface $input, OutputInterface $output)
     {
         $dialog = $this->getHelperSet()->get('dialog');
+        $defaultClassmapFilename = 'autoloader_classmap';
+        $defaultAutoloaderFilename = 'generated_autoloader';
 
         $classmapFilename = $dialog->askAndValidate(
             $output,
-            '<question>Please enter a name for the classmap file. You don\'t have to suffix the file with ".php".</question>',
+            '<question>Please enter a name for the classmap file (default is "' . $defaultClassmapFilename . '".' . PHP_EOL .
+                'You don\'t have to suffix the file with ".php".</question>' . PHP_EOL,
             function ($answer) {
                 if (strlen($answer) < 4) {
                     throw new RunTimeException(
@@ -117,12 +168,13 @@ class ConfigureCommand extends CommandAbstract
                 return $answer;
             },
             false,
-            'autoloader_classmap'
+            $defaultClassmapFilename
         );
 
         $autoloaderFilename = $dialog->askAndValidate(
             $output,
-            '<question>Please enter a name for the autoloader file. You don\'t have to suffix the file with ".php".</question>',
+            '<question>Please enter a name for the autoloader file (default is "' . $defaultAutoloaderFilename . '".' . PHP_EOL .
+                'You don\'t have to suffix the file with ".php".</question>' . PHP_EOL,
             function ($answer) {
                 if (strlen($answer) < 4) {
                     throw new RunTimeException(
@@ -133,7 +185,7 @@ class ConfigureCommand extends CommandAbstract
                 return $answer;
             },
             false,
-            'generated_autoloader'
+            $defaultAutoloaderFilename
         );
 
         return array(
@@ -152,13 +204,14 @@ class ConfigureCommand extends CommandAbstract
     private function askForFilepaths(InputInterface $input, OutputInterface $output)
     {
         $dialog = $this->getHelperSet()->get('dialog');
+        $defaultPath = getcwd();
 
         $classmapFilepath = $dialog->askAndValidate(
             $output,
-            'Please enter the path where you want to store the classmap file.',
+            '<question>Please enter the path where you want to store the classmap file (default is "' . $defaultPath . '").</question>' . PHP_EOL,
             function ($answere) {
-                if ((!is_dir($answere))
-                    || (!is_writeable($answere))) {
+                if ((!is_dir(realpath($answere)))
+                    || (!is_writeable(realpath($answere)))) {
                     throw new RuntimeException(
                         'The path must exists and has to be writeable.'
                     );
@@ -167,15 +220,15 @@ class ConfigureCommand extends CommandAbstract
                 }
             },
             false,
-            getcwd()
+            $defaultPath
         );
 
         $autoloaderFilepath = $dialog->askAndValidate(
             $output,
-            'Please enter the path where you want to store the autoloader file.',
+            '<question>Please enter the path where you want to store the autoloader file (default is "' . $defaultPath . '").</question>' . PHP_EOL,
             function ($answere) {
-                if ((!is_dir($answere))
-                    || (!is_writeable($answere))) {
+                if ((!is_dir(realpath($answere)))
+                    || (!is_writeable(realpath($answere)))) {
                     throw new RuntimeException(
                         'The path must exists and has to be writeable.'
                     );
@@ -184,15 +237,15 @@ class ConfigureCommand extends CommandAbstract
                 }
             },
             false,
-            getcwd()
+            $defaultPath
         );
 
         $configurationFilepath = $dialog->askAndValidate(
             $output,
-            'Please enter the path where you want to store the configuration file.',
+            '<question>Please enter the path where you want to store the configuration file (default is "' . $defaultPath . '").</question>' . PHP_EOL,
             function ($answere) {
-                if ((!is_dir($answere))
-                    || (!is_writeable($answere))) {
+                if ((!is_dir(realpath($answere)))
+                    || (!is_writeable(realpath($answere)))) {
                     throw new RuntimeException(
                         'The path must exists and has to be writeable.'
                     );
@@ -201,7 +254,7 @@ class ConfigureCommand extends CommandAbstract
                 }
             },
             false,
-            getcwd()
+            $defaultPath
         );
 
         return array(
@@ -211,23 +264,81 @@ class ConfigureCommand extends CommandAbstract
         );
     }
 
+    /**
+     * @author stev leibelt
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return array
+     * @since 2013-04-21
+     */
     private function askForWhitelistPaths(InputInterface $input, OutputInterface $output)
     {
+        $dialog = $this->getHelperSet()->get('dialog');
         $whitelist = array();
 
+        $output->writeln('<info>Add paths (directory or file) you want to whitelist (parsed for sure). Enter empty string when finished.</info>');
         while (true) {
-            //@TODO ask for whitelist path as long as exit command is triggered
+            $path = $dialog->askAndValidate(
+                $output,
+                '<question>Enter path you want to whitelist.</question>' . PHP_EOL,
+                function ($answer) {
+                    if (($answer != '')
+                        && (!is_readable(realpath(($answer))))) {
+                        throw new RuntimeException(
+                            'Provided path is not readable'
+                        );
+                    }
+
+                    return $answer;
+                },
+                false,
+                ''
+            );
+
+            if ($path == '') {
+                break;
+            }
+            $whitelist[] = $path;
         }
 
         return $whitelist;
     }
 
+    /**
+     * @author stev leibelt
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return array
+     * @since 2013-04-21
+     */
     private function askForBlacklistPaths(InputInterface $input, OutputInterface $output)
     {
+        $dialog = $this->getHelperSet()->get('dialog');
         $blacklist = array();
 
+        $output->writeln('<info>Add paths (directory or file) you want to blacklist (will never be parsed). Enter empty string when finished.</info>');
         while (true) {
-            //@TODO ask for blacklist path as long as exit command is triggered
+            $path = $dialog->askAndValidate(
+                $output,
+                '<question>Enter path you want to blacklist.</question>' . PHP_EOL,
+                function ($answer) {
+                    if (($answer != '')
+                        && (!is_readable(realpath(($answer))))) {
+                        throw new RuntimeException(
+                            'Provided path is not readable'
+                        );
+                    }
+
+                    return $answer;
+                },
+                false,
+                ''
+            );
+
+            if ($path == '') {
+                break;
+            }
+            $blacklist[] = $path;
         }
 
         return $blacklist;
@@ -242,20 +353,24 @@ class ConfigureCommand extends CommandAbstract
      */
     private function askForDefaultTimezone(InputInterface $input, OutputInterface $output)
     {
+        $dialog = $this->getHelperSet()->get('dialog');
+        $default = 'Europe/Berlin';
+
         $defaultTimezone = $dialog->askAndValidate(
             $output,
-            '<question>Please enter your default timezone.</question>',
+            '<question>Please enter your default timezone (default is "' . $default . '").</question>' . PHP_EOL,
             function ($answer) {
-                if (strpos($answer, '\\') === false) {
+                if (($answer != '')
+                    && (strpos($answer, '/') === false)) {
                     throw new RunTimeException(
-                        'The timezone needs at least one "\\" in it.'
+                        'The timezone needs at least one "/" in it.'
                     );
                 }
 
                 return $answer;
             },
-            false,
-            'Europe/Berlin'
+            true,
+            $default
         );
 
         return (string) $defaultTimezone;

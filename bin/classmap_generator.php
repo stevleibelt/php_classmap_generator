@@ -5,10 +5,10 @@
  * @since 2013-02-27
  */
 
-chdir(realpath(__DIR__ . DIRECTORY_SEPARATOR));
+chdir(realpath(getcwd()));
 
-require '../src/Net/Bazzline/ClassmapGenerator/basicAutoloader.php';
-require '../vendor/autoload.php';
+require 'src/Net/Bazzline/ClassmapGenerator/basicAutoloader.php';
+require 'vendor/autoload.php';
 
 $application = \Net\Bazzline\ClassmapGenerator\Application\Application::create(getcwd());
 $application->run();
