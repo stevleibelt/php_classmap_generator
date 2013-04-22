@@ -195,7 +195,7 @@ class ConfigureCommand extends CommandAbstract
 
         return array(
             'classmap' => $classmapFilepath,
-            'autloader' => $autoloaderFilepath,
+            'autoloader' => $autoloaderFilepath,
             'configuration' => $configurationFilepath
         );
     }
@@ -247,7 +247,10 @@ class ConfigureCommand extends CommandAbstract
     {
         $default = '';
         $question = '<question>Enter path you want to blacklist.</question>';
-        $blacklist = array();
+        $blacklist = array(
+            '.',
+            '..'
+        );
         $validator = function ($answer) {
             if (($answer != '')
                 && (!is_readable(realpath(($answer))))) {

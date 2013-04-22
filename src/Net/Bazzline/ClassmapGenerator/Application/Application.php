@@ -2,17 +2,12 @@
 
 namespace Net\Bazzline\ClassmapGenerator\Application;
 
-use Net\Bazzline\ClassmapGenerator\View\ErrorView;
-use Net\Bazzline\ClassmapGenerator\View\HelpView;
-use Net\Bazzline\ClassmapGenerator\View\InfoView;
 use Net\Bazzline\ClassmapGenerator\Command\ConfigureCommand;
 use Net\Bazzline\ClassmapGenerator\Command\CreateCommand;
 use Net\Bazzline\ClassmapGenerator\Command\ManualCommand;
-use Net\Bazzline\ClassmapGenerator\Validate\CliValidate;
 use Net\Bazzline\ClassmapGenerator\Validate\ArgumentValidate;
 
 use Symfony\Component\Console\Application as SymfonyApplication;
-use RuntimeException;
 
 /**
  * @author stev leibelt

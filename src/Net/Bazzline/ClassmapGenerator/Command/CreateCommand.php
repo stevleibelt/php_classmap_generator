@@ -32,7 +32,6 @@ class CreateCommand extends CommandAbstract
     /**
      * @author stev leibelt
      * @since 2013-02-28
-     * @todo implement
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
@@ -74,7 +73,7 @@ class CreateCommand extends CommandAbstract
                 }
             }
 
-            if ($this->createAutoloaderFile) {
+            if ($configuration['createAutoloaderFile']) {
                 $autoloaderFilewriter = AutoloaderFilewriterFactory::create(
                     array(
                         AutoloaderFilewriterFactory::OPTION_FILE_PATH_AUTOLOADER => realpath($configuration['filepath']['autoloader']) . DIRECTORY_SEPARATOR . $configuration['filename']['autoloader'],
