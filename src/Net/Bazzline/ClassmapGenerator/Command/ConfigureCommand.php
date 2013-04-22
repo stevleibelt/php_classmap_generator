@@ -174,8 +174,7 @@ class ConfigureCommand extends CommandAbstract
      */
     private function askForFilepaths(InputInterface $input, OutputInterface $output)
     {
-        $dialog = $this->getHelperSet()->get('dialog');
-        $defaultPath = '.';
+        $defaultPath = '';
         $questionClassmapFilepath = '<question>Please enter the path where you want to store the classmap file (default is "' . $defaultPath . '").</question>';
         $questionAutoloaderFilepath = '<question>Please enter the path where you want to store the autoloader file (default is "' . $defaultPath . '").</question>';
         $questionConfigurationFilepath = '<question>Please enter the path where you want to store the configuration file (default is "' . $defaultPath . '").</question>';
@@ -185,18 +184,15 @@ class ConfigureCommand extends CommandAbstract
                     throw new RuntimeException(
                         'The path must exists and has to be writeable.'
                     );
-
-                    return $answer;
                 }
+
+                return $answer;
             };
 
         $classmapFilepath = $this->askAndValidate($output, $questionClassmapFilepath, $validator, false, $defaultPath);
         $autoloaderFilepath = $this->askAndValidate($output, $questionAutoloaderFilepath, $validator, false, $defaultPath);
         $configurationFilepath = $this->askAndValidate($output, $questionConfigurationFilepath, $validator, false, $defaultPath);
 
-echo var_export($classmapFilepath, true) . PHP_EOL;
-echo var_export($autoloaderFilepath, true) . PHP_EOL;
-echo var_export($configurationFilepath, true) . PHP_EOL;
         return array(
             'classmap' => $classmapFilepath,
             'autloader' => $autoloaderFilepath,
