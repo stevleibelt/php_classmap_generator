@@ -222,7 +222,12 @@ class CreateCommand extends CommandAbstract
      */
     public function execute()
     {
-        $view = $this->getView();
+
+        if (!file_exists(self::CONFIGURATION_FILE_NAME)) {
+            echo 'No file "' . self::CONFIGURATION_FILE_NAME . '" found in current working directory.' . PHP_EOL .
+               'Call with argument "configurate"' . PHP_EOL;
+            exit(1);
+        }        $view = $this->getView();
         $view->addData('Overwrite if file exists (yes/no): ' . ($this->isForced() ? 'yes' : 'no'));
         $view->addData('');
 

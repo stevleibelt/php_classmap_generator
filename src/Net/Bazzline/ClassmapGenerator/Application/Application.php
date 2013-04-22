@@ -12,6 +12,7 @@ use Net\Bazzline\ClassmapGenerator\Validate\CliValidate;
 use Net\Bazzline\ClassmapGenerator\Validate\ArgumentValidate;
 
 use Symfony\Component\Console\Application as SymfonyApplication;
+use RuntimeException;
 
 /**
  * @author stev leibelt
@@ -19,8 +20,9 @@ use Symfony\Component\Console\Application as SymfonyApplication;
  */
 class Application extends SymfonyApplication
 {
-    const VERSION = '1.1.0.1';
+    const CONFIGURATION_FILE_NAME = 'classmap_generator_configuration.php';
     const NAME = 'classmap generator';
+    const VERSION = '1.1.0.1';
 
     /**
      * @author stev leibelt
@@ -43,7 +45,7 @@ class Application extends SymfonyApplication
     public function __construct($userWorkingDirectory)
     {
         parent::__construct(self::NAME, self::VERSION);
-        $this->configuration = require __DIR__ . '/../configuration.php';
+        $this->configuration = (file_exists(self::CONFIGURATION_FILE_NAME) ? require self::CONFIGURATION_FILE_NAME : array());
         $this->userWorkingDirectory = $userWorkingDirectory;
 
         $this->mergeConfigurationWithProjectConfigurationIfAvailable();
@@ -52,9 +54,9 @@ class Application extends SymfonyApplication
             date_default_timezone_set($this->configuration['defaultTimezone']);
         }
 
-        foreach ($this->getCommandsFromConfiguration() as $command) {
-            $this->add($command);
-        }
+        $this->add(new ManualCommand());
+        $this->add(new ConfigureCommand());
+        $this->add(new CreateCommand());
     }
 
     /**
@@ -110,23 +112,5 @@ class Application extends SymfonyApplication
                 $projectConfiguration['net_bazzline']
             );
         }
-    }
-
-    /**
-     * @author stev leibelt
-     * @since 2013-04-21
-     * @return array
-     */
-    private function getCommandsFromConfiguration()
-    {
-        $commands = array();
-
-        foreach ($this->configuration['command'] as $className) {
-            if (class_exists($className)) {
-                $commands[] = new $className();
-            }
-        }
-
-        return $commands;
     }
 }

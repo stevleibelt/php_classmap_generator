@@ -32,7 +32,7 @@ class ConfigurationFilewriter extends FilewriterAbstract
 return array (
     'net_bazzline' => array (
         'createAutoloaderFile' => $createAutoloaderFile,
-        'defaultTimezone' => $defaultTimezone,
+        'defaultTimezone' => '$defaultTimezone',
         'filename' => array (
 EOC;
         $filenames = $this->getDataValue('filename', array());
@@ -85,7 +85,6 @@ EOC;
             $data .= PHP_EOL . <<<EOC
         ),
         'whitelist' => array (
-
 EOC;
         $whitelistedItems = $this->getDataValue('whitelist', array());
         $numberOfWhitelistedItems = count($whitelistedItems);
