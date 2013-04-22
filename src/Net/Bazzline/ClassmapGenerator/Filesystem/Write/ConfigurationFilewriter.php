@@ -26,6 +26,7 @@ class ConfigurationFilewriter extends FilewriterAbstract
 <?php
 /**
  * Configuration file for classmap generator
+ * @author stev leibelt
  * @since $date
  */
 

@@ -48,12 +48,13 @@ class AutoloaderFilewriter extends FilewriterAbstract
         }
 
         $uniqueIdentifier = sha1(__CLASS__ . microtime());
-        $date = date('Y-m-d') . ' ' . date('H:i:s');
+        $date = date('Y-m-d H:i:s');
         $data = <<<EOC
 <?php
 /**
  * Created with Net\Bazzline\ClassmapGenerator
- * Creationdate $date
+ * @author stev leibelt
+ * @since $date
  */
 
 /**

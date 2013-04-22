@@ -24,8 +24,8 @@ class ClassmapFilewriter extends FilewriterAbstract
             $head = '<?php' . PHP_EOL .
                 '/**' . PHP_EOL .
                 '* Created with Net\Bazzline\ClassmapGenerator' . PHP_EOL .
-                '* Creationdate ' . date('Y-m-d') . ' ' . date('H:i:s') . PHP_EOL .
-                '*' . PHP_EOL .
+                '* @author stev leibelt' . PHP_EOL .
+                '* @since ' . date('Y-m-d H:i:s') . PHP_EOL .
                 '*/' . PHP_EOL .
                 '' . PHP_EOL .
                 'return array(';
