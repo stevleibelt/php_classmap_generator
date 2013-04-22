@@ -48,8 +48,6 @@ class Application extends SymfonyApplication
         $this->configuration = (file_exists(self::CONFIGURATION_FILE_NAME) ? require self::CONFIGURATION_FILE_NAME : array());
         $this->userWorkingDirectory = $userWorkingDirectory;
 
-        $this->mergeConfigurationWithProjectConfigurationIfAvailable();
-
         if (date_default_timezone_get() === false) {
             date_default_timezone_set($this->configuration['defaultTimezone']);
         }
@@ -74,43 +72,11 @@ class Application extends SymfonyApplication
 
     /**
      * @author stev leibelt
-     * @param boolean $forceWriting
-     * @since 2013-02-27
+     * @return array
+     * @since 2013-04-22
      */
-    private function executeCreate($forceWriting = false)
+    public function getConfiguration()
     {
-        $command = new CreateCommand();
-        $command->setView(new InfoView());
-        $command->setForce($forceWriting);
-        $command->setBasePath($this->userWorkingDirectory);
-        $command->setClassmapOutputpath($this->userWorkingDirectory);
-        $command->setClassmapFilename($this->configuration['name']['classmap']);
-        $command->setWhitelistDirectories($this->configuration['path']['whitelist']);
-        $command->setBlacklistDirectories($this->configuration['path']['blacklist']);
-        $command->setCreateAutloaderFile($this->configuration['createAutoloaderFile']);
-        $command->setAutoloaderFilename($this->configuration['name']['autoloader']);
-        $command->setAutoloaderOutputpath($this->userWorkingDirectory);
-        $command->execute();
-    }
-
-    /**
-     * @author stev leibelt
-     * @since 2013-03-02
-     */
-    private function mergeConfigurationWithProjectConfigurationIfAvailable()
-    {
-        $isProjectConfigurationAvailable = ((isset($this->configuration['name']))
-            && (isset($this->configuration['name']['projectConfiguration']))
-            && (is_file($this->userWorkingDirectory . DIRECTORY_SEPARATOR . $this->configuration['name']['projectConfiguration'])));
-
-        if ($isProjectConfigurationAvailable) {
-            $projectConfiguration = require $this->userWorkingDirectory . 
-                    DIRECTORY_SEPARATOR . 
-                    $this->configuration['name']['projectConfiguration'];
-            $this->configuration = array_replace_recursive(
-                $this->configuration, 
-                $projectConfiguration['net_bazzline']
-            );
-        }
+        return $this->configuration['net_bazzline'];
     }
 }

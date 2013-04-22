@@ -18,193 +18,6 @@ class CreateCommand extends CommandAbstract
 {
     /**
      * @author stev leibelt
-     * @param boolean
-     * @since 2013-03-03
-     */
-    private $createAutoloaderFile;
-
-    /**
-     * @author stev leibelt
-     * @since 2013-02-28
-     * @var boolean
-     */
-    private $force;
-
-    /**
-     * @author stev leibelt
-     * @since 2013-02-28
-     * @var string
-     */
-    private $basePath;
-
-    /**
-     * @author stev leibelt
-     * @since 2013-02-28
-     * @var string
-     */
-    private $classmapOutputPath;
-
-    /**
-     * @author stev leibelt
-     * @since 2013-03-03
-     * @var string
-     */
-    private $autoloaderOutputPath;
-
-    /**
-     * @author stev leibelt
-     * @since 2013-02-28
-     * @var array
-     */
-    private $whitelistedDirectories;
-
-    /**
-     * @author stev leibelt
-     * @since 2013-02-28
-     * @var array
-     */
-    private $blacklistedDirectories;
-
-    /**
-     * @authors stev leibelt
-     * @since 2013-02-28
-     * @var array
-     */
-    private $classMapContent;
-
-    /**
-     * @author stev leibelt
-     * @since 2013-03-03
-     * @var string 
-     */
-    private $classmapFileName;
-
-    /**
-     * @author stev leibelt
-     * @since 2013-03-03
-     * @var string 
-     */
-    private $autoloaderFileName;
-
-    /**
-     * @author stev leibelt
-     * @since 2013-02-28
-     */
-    public function __construct()
-    {
-        parent::__construct();
-        $this->setForce(false);
-        $this->setBasePath(getcwd());
-        $this->setClassmapOutputpath(getcwd());
-        $this->setAutoloaderOutputpath(getcwd());
-        $this->setBlacklistDirectories(array());
-        $this->setWhitelistDirectories(array());
-        $this->setCreateAutloaderFile(false);
-        $this->classMapContent = array();
-    }
-
-    /**
-     * @author stev leibelt
-     * @param boolean $force
-     * @since 2013-02-28
-     */
-    public function setForce($force)
-    {
-        $this->force = (boolean) $force;
-    }
-
-    /**
-     * @author stev leibelt
-     * @param string $basePath
-     * @since 2013-02-28
-     */
-    public function setBasePath($basePath)
-    {
-        $this->basePath = (string) $basePath;
-    }
-
-    /**
-     * @author stev leibelt
-     * @param string $outputPath
-     * @since 2013-02-28
-     */
-    public function setClassmapOutputpath($outputPath)
-    {
-        $this->classmapOutputPath = (string) $outputPath;
-    }
-
-    /**
-     * @author stev leibelt
-     * @param string $outputPath
-     * @since 2013-03-03
-     */
-    public function setAutoloaderOutputpath($outputPath)
-    {
-        $this->autoloaderOutputPath = (string) $outputPath;
-    }
-
-    /**
-     * @author stev leibelt
-     * @param array $blacklistDirectories
-     * @since 2013-02-28
-     */
-    public function setBlacklistDirectories(array $blacklistDirectories)
-    {
-        $this->blacklistedDirectories = $blacklistDirectories;
-    }
-
-    /**
-     * @author stev leibelt
-     * @param array $whilelistDirectories
-     * @since 2013-02-28
-     */
-    public function setWhitelistDirectories(array $whilelistDirectories)
-    {
-        $this->whitelistedDirectories = $whilelistDirectories;
-    }
-
-    /**
-     * @author stev leibelt
-     * @param string $filename
-     * @since 2013-03-03
-     */
-    public function setClassmapFilename($filename)
-    {
-        $this->classmapFileName = (string) $filename;
-    }
-
-    /**
-     * @author stev leibelt
-     * @param string $filename
-     * @since 2013-03-03
-     */
-    public function setAutoloaderFilename($filename)
-    {
-        $this->autoloaderFileName = (string) $filename;
-    }
-
-    /**
-     * @author stev leibelt
-     * @param boolean $createAutoloaderFile
-     * @since 2013-03-03
-     */
-    public function setCreateAutloaderFile($createAutoloaderFile)
-    {
-        $this->createAutoloaderFile = (boolean) $createAutoloaderFile;
-    }
-
-    /**
-     * @author stev leibelt
-     * @return boolean $force
-     * @since 2013-02-28
-     */
-    private function isForced()
-    {
-        return ($this->force === true);
-    }
-
-    /**
-     * @author stev leibelt
      * @since 2013-04-21
      */
     protected  function configure()
@@ -212,6 +25,7 @@ class CreateCommand extends CommandAbstract
         $this
             ->setName('create')
             ->setDescription('Creates classmap.')
+            ->addOption('force', null, InputOption::VALUE_NONE, 'Overwrites existing files.')
         ;
     }
 
@@ -220,68 +34,75 @@ class CreateCommand extends CommandAbstract
      * @since 2013-02-28
      * @todo implement
      */
-    public function execute()
+    public function execute(InputInterface $input, OutputInterface $output)
     {
-
-        if (!file_exists(self::CONFIGURATION_FILE_NAME)) {
-            echo 'No file "' . self::CONFIGURATION_FILE_NAME . '" found in current working directory.' . PHP_EOL .
-               'Call with argument "configurate"' . PHP_EOL;
-            exit(1);
-        }        $view = $this->getView();
-        $view->addData('Overwrite if file exists (yes/no): ' . ($this->isForced() ? 'yes' : 'no'));
-        $view->addData('');
-
-        $filepathIterator = FilepathIteratorFactory::create(
-            array(
-                FilepathIteratorFactory::OPTION_BASE_PATH => $this->basePath,
-                FilepathIteratorFactory::OPTION_BLACKISTED_DIRECTORIES => $this->generatePaths($this->blacklistedDirectories),
-                FilepathIteratorFactory::OPTION_WHITELISTED_DIRECTORIES => $this->generatePaths($this->whitelistedDirectories)
-            )
-        );
-
-        $classmapFileWriter = ClassmapFilewriterFactory::create(
-            array(
-                ClassmapFilewriterFactory::OPTION_FILE_DATA => $filepathIterator->iterate(),
-                ClassmapFilewriterFactory::OPTION_FILE_PATH => realpath($this->classmapOutputPath) . DIRECTORY_SEPARATOR . $this->classmapFileName
-            )
-        );
-
-        if ($classmapFileWriter->fileExists()) {
-            if ($this->isForced()) {
-                $view->addData(($classmapFileWriter->overwrite()) ? 'classmap written' : 'classmap was not written');
-            } else {
-                $view->addData('Classmapfile exists. Use force to overwrite.');
-            }
+        $configuration = $this->getApplication()->getConfiguration();
+        if (count($configuration) < 1) {
+            $output->writeln('<error>Configuration is empty or does not exist.</error>');
+            $output->writeln('<error>Try to call "classmap_generator.php configure".</error>');
         } else {
-            $view->addData(($classmapFileWriter->write()) ? 'classmap written' : 'classmap was not written');
-        }
-
-        if ($this->createAutoloaderFile) {
-            $autoloaderFilewriter = AutoloaderFilewriterFactory::create(
+            $isForced = $input->getOption('force');
+            $filepathIterator = FilepathIteratorFactory::create(
                 array(
-                    AutoloaderFilewriterFactory::OPTION_FILE_PATH_AUTOLOADER => realpath($this->autoloaderOutputPath) . DIRECTORY_SEPARATOR . $this->autoloaderFileName,
-                    AutoloaderFilewriterFactory::OPTION_FILE_PATH_CLASSMAP => realpath($this->classmapOutputPath) . DIRECTORY_SEPARATOR . $this->classmapFileName
+                    FilepathIteratorFactory::OPTION_BASE_PATH => getcwd(),
+                    FilepathIteratorFactory::OPTION_BLACKISTED_DIRECTORIES => $this->generatePaths($configuration['blacklist']),
+                    FilepathIteratorFactory::OPTION_WHITELISTED_DIRECTORIES => $this->generatePaths($configuration['whitelist'])
                 )
             );
 
-            if ($autoloaderFilewriter->fileExists()) {
-                if ($this->isForced()) {
-                    $view->addData(($autoloaderFilewriter->overwrite()) ? 'autoloader written' : 'autoloader was not written');
+            $classmapFileWriter = ClassmapFilewriterFactory::create(
+                array(
+                    ClassmapFilewriterFactory::OPTION_FILE_DATA => $filepathIterator->iterate(),
+                    ClassmapFilewriterFactory::OPTION_FILE_PATH => realpath($configuration['filepath']['classmap']) . DIRECTORY_SEPARATOR . $configuration['filename']['classmap']
+                )
+            );
+            if ($classmapFileWriter->fileExists()) {
+                if ($isForced) {
+                    if ($classmapFileWriter->overwrite()) {
+                        $output->writeln('<info>Classmap was written</info>');
+                    } else {
+                        $output->writeln('<error>Classmap was not written</error>');
+                    }
                 } else {
-                    $view->addData('Autoloaderfile exists. Use force to overwrite.');
+                    $output->writeln('<comment>Classmap exists and overwriting was not forced.</comment>');
                 }
             } else {
-                $view->addData(($autoloaderFilewriter->write()) ? 'autoloader written' : 'autoloader was not written');
+                if ($classmapFileWriter->write()) {
+                    $output->writeln('<info>Classmap was written</info>');
+                } else {
+                    $output->writeln('<error>Classmap was not written</error>');
+                }
+            }
+
+            if ($this->createAutoloaderFile) {
+                $autoloaderFilewriter = AutoloaderFilewriterFactory::create(
+                    array(
+                        AutoloaderFilewriterFactory::OPTION_FILE_PATH_AUTOLOADER => realpath($configuration['filepath']['autoloader']) . DIRECTORY_SEPARATOR . $configuration['filename']['autoloader'],
+                        AutoloaderFilewriterFactory::OPTION_FILE_PATH_CLASSMAP => realpath($configuration['filepath']['classmap']) . DIRECTORY_SEPARATOR . $configuration['filename']['classmap']
+                    )
+                );
+
+                if ($autoloaderFilewriter->fileExists()) {
+                    if ($isForced) {
+                        if ($autoloaderFilewriter->overwrite()) {
+                            $output->writeln('<info>Autoloader was written.</info>');
+                        } else {
+                            $output->writeln('<error>Autoloader was not written.</error>');
+                        }
+                    } else {
+                        $output->writeln('<comment>Autoloader exists and overwriting was not forced.</comment>');
+                    }
+                } else {
+                    if ($autoloaderFilewriter->write()) {
+                        $output->writeln('<info>Autoloader was written.</info>');
+                    } else {
+                        $output->writeln('<error>Autoloader was not written.</error>');
+                    }
+                }
             }
         }
-
-        $view->addData('');
-        $view->addData('done');
-        $view->render();
     }
-    
-    
-    
+
     /**
      * @author stev leibelt
      * @param array $paths
