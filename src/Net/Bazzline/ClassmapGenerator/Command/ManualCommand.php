@@ -32,8 +32,6 @@ class ManualCommand extends CommandAbstract
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $data = array(
-            '<comment>Invalid argument supplied.</comment>',
-            '',
             '<comment>Manual</comment>',
             '==============',
             '<comment>NAME</comment>',

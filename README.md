@@ -4,34 +4,35 @@ php_classmap_generator
 php classmap and autoloader generator
 
 Manual
-==============
-NAME   
-        php - classmap generator for all php files containing one or multiple interface|abstract class|class decleration.
+======
+NAME
+        php - classmap generator for psr-2 based php projects
+SYNOPSIS
+        index.php [OPTION]
+DESCRIPTION
+        Creates classmap by iterating over project directories.
 
-SYNOPSIS   
-        bin/classmap_generator.php [OPTION]   
-
-DESCRIPTION 
-        Creates classmap by iterating over configured project directories. 
-        Can have multiple configuration files.
-
-        Following options are available. 
+        Following options are available.
 
         create
             Creates classmap if no classmap file exists.
         create --force
-            Creates classmap even if classmap file exists.
+            Creates classmap even if file exists.
+        create --classmap
+            Creates only classmap file.
+        create --autoloader
+            Creates only autoloader file.
         configure
-            Creates the configuration file.
+            Create the configuration file.
         configure --full
-            Creates a full configuration file (generally not needed).
-        help
+            Create a full configuration file (generally not needed).
+        manual
             Print this manual.
-AUTHOR  
-        Written by Stev Leibelt  
+AUTHOR
+        Written by Stev Leibelt
 
-REPORTING BUGS  
-        artodeto@arcor.de  
+REPORTING BUGS
+        artodeto@arcor.de
 
-SEE ALSO  
-        artodeto.bazzline.net  
+SEE ALSO
+        artodeto.bazzline.net
