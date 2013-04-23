@@ -17,6 +17,44 @@ class ConfigureCommand extends CommandAbstract
 {
     /**
      * @author stev leibelt
+     * @since 2013-04-23
+     * @var array
+     */
+    private $defaultBlacklist;
+
+    /**
+     * @author stev leibelt
+     * @since 2013-04-23
+     * @var
+     */
+    private $defaultPath;
+
+    /**
+     * @author stev leibelt
+     * @since 2013-04-23
+     * @var string
+     */
+    private $defaultTimezone;
+
+    /**
+     * @author stev leibelt
+     * @param null $name
+     * @since 2013-04-23
+     */
+    public function __construct($name = null)
+    {
+        parent::__construct($name);
+
+        $this->defaultBlacklist = array(
+            '.',
+            '..'
+        );
+        $this->defaultPath = '';
+        $this->defaultTimezone = 'Europe/Berlin';
+    }
+
+    /**
+     * @author stev leibelt
      * @since 2013-04-21
      */
     protected  function configure()
@@ -24,6 +62,7 @@ class ConfigureCommand extends CommandAbstract
         $this
             ->setName('configure')
             ->setDescription('Configures classmap generator')
+            ->addOption('full', null, InputOption::VALUE_NONE, 'Full configuration.')
         ;
     }
 
@@ -34,14 +73,28 @@ class ConfigureCommand extends CommandAbstract
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $configuration = array();
+        $doFullConfiguration = $input->getOption('full');
 
-        $configuration['filename'] = $this->askForFilenames($input, $output);
-        $configuration['filepath'] = $this->askForFilepaths($input, $output);
-        $configuration['whitelist'] = $this->askForWhitelistPaths($input, $output);
-        $configuration['blacklist'] = $this->askForBlacklistPaths($input, $output);
+        if (file_exists('classmap_generator_configuration.php')) {
+            $overwrite = $this->askForOverwriteIfFileExists($input, $output);
+        }
         $configuration['createAutoloaderFile'] = $this->askCreationOfAutoloaderFile($input, $output);
-        $configuration['defaultTimezone'] = $this->askForDefaultTimezone($input, $output);
-        $overwrite = $this->askForOverwriteIfFileExists($input, $output);
+        $configuration['filename'] = $this->askForFilenames($input, $output);
+        $configuration['whitelist'] = $this->askForWhitelistPaths($input, $output);
+
+        if ($doFullConfiguration) {
+            $configuration['defaultTimezone'] = $this->askForDefaultTimezone($input, $output);
+            $configuration['filepath'] = $this->askForFilepaths($input, $output);
+            $configuration['blacklist'] = $this->askForBlacklistPaths($input, $output);
+        } else {
+            $configuration['defaultTimezone'] = $this->defaultTimezone;
+            $configuration['filepath'] = array(
+                'classmap' => $classmapFilepath,
+                'autoloader' => $autoloaderFilepath,
+                'configuration' => $configurationFilepath
+            );
+            $configuration['blacklist'] = $this->defaultBlacklist;
+        }
 
         $fileName = 'classmap_generator_configuration.php';
         $filePath = getcwd();
@@ -174,7 +227,7 @@ class ConfigureCommand extends CommandAbstract
      */
     private function askForFilepaths(InputInterface $input, OutputInterface $output)
     {
-        $defaultPath = '';
+        $defaultPath = $this->defaultPath;
         $questionClassmapFilepath = '<question>Please enter the path where you want to store the classmap file (default is "' . $defaultPath . '").</question>';
         $questionAutoloaderFilepath = '<question>Please enter the path where you want to store the autoloader file (default is "' . $defaultPath . '").</question>';
         $questionConfigurationFilepath = '<question>Please enter the path where you want to store the configuration file (default is "' . $defaultPath . '").</question>';
@@ -247,10 +300,8 @@ class ConfigureCommand extends CommandAbstract
     {
         $default = '';
         $question = '<question>Enter path you want to blacklist.</question>';
-        $blacklist = array(
-            '.',
-            '..'
-        );
+        $blacklist = $this->defaultBlacklist;
+
         $validator = function ($answer) {
             if (($answer != '')
                 && (!is_readable(realpath(($answer))))) {
@@ -284,9 +335,7 @@ class ConfigureCommand extends CommandAbstract
      */
     private function askForDefaultTimezone(InputInterface $input, OutputInterface $output)
     {
-        $dialog = $this->getHelperSet()->get('dialog');
-        $default = 'Europe/Berlin';
-        $question = '<question>Please enter your default timezone (default is "' . $default . '").</question>';
+        $question = '<question>Please enter your default timezone (default is "' . $this->defaultTimezone . '").</question>';
         $validator = function ($answer) {
                 if (($answer != '')
                     && (strpos($answer, '/') === false)) {
@@ -298,7 +347,7 @@ class ConfigureCommand extends CommandAbstract
                 return $answer;
             };
 
-        $defaultTimezone = $this->askAndValidate($output, $question, $validator, false, $default);
+        $defaultTimezone = $this->askAndValidate($output, $question, $validator, false, $this->defaultTimezone);
 
         return (string) $defaultTimezone;
     }
