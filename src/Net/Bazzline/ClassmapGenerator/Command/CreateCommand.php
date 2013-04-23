@@ -48,6 +48,7 @@ class CreateCommand extends CommandAbstract
             $classmapFilePath = realpath($configuration['filepath']['classmap']) .
                 DIRECTORY_SEPARATOR . $configuration['filename']['classmap'];
             $isForced = $input->getOption('force');
+
             $filepathIterator = FilepathIteratorFactory::create(
                 array(
                     FilepathIteratorFactory::OPTION_BASE_PATH => getcwd(),
@@ -101,7 +102,7 @@ class CreateCommand extends CommandAbstract
 
             if ($autoloaderWasWritten) {
                 $output->writeln('<info>Autoloader was written to "' .
-                    $autoloaderFilePath . '".</info>');
+                   $autoloaderFilePath . '".</info>');
             } else {
                 $output->writeln('<error>Autoloader was not written.</error>');
             }
