@@ -194,12 +194,12 @@ class ConfigureCommand extends CommandAbstract
      */
     private function askForFilenames(InputInterface $input, OutputInterface $output)
     {
-        $defaultClassmapFilename = 'autoloader_classmap';
+        $defaultClassmapFilename = 'generated_classmap';
         $defaultAutoloaderFilename = 'generated_autoloader';
-        $questionClassmapFilename = '<question>Please enter a name for the classmap file (default is "' . $defaultClassmapFilename . '".' . PHP_EOL .
-                'You don\'t have to suffix the file with ".php".</question>';
-        $questionAutoloaderFilename = '<question>Please enter a name for the autoloader file (default is "' . $defaultAutoloaderFilename . '".' . PHP_EOL .
-                'You don\'t have to suffix the file with ".php".</question>';
+        $questionClassmapFilename = '<question>Please enter a name for the classmap file (default is "' . $defaultClassmapFilename . '".</question>' . PHP_EOL .
+                '<comment>You don\'t have to suffix the file with ".php".</comment>';
+        $questionAutoloaderFilename = '<question>Please enter a name for the autoloader file (default is "' . $defaultAutoloaderFilename . '"</question>.' . PHP_EOL .
+                '<comment>You don\'t have to suffix the file with ".php".</comment>';
         $validator = function ($answer) {
                 if (strlen($answer) < 4) {
                     throw new RunTimeException(
