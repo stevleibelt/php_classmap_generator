@@ -79,8 +79,10 @@ class FilepathIterator implements IterateInterface
             $this->setBasepath('');
         }
 
-        foreach ($this->whitelistedPaths as $path) {
-            $classmapFileContent += $this->iteratePath(realpath($this->basepath . DIRECTORY_SEPARATOR . $path));
+        if (count($this->whitelistedPaths) > 0) {
+            foreach ($this->whitelistedPaths as $path) {
+                $classmapFileContent += $this->iteratePath(realpath($this->basepath . DIRECTORY_SEPARATOR . $path));
+            }
         }
 
         return $classmapFileContent;
