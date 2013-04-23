@@ -1,6 +1,3 @@
-#command
-refactor create (add argument force/overwrite/create class_map etc.)
-
 #config
 migrate config to symfony component if needed
 
