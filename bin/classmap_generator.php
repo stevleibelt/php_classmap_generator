@@ -7,7 +7,10 @@
 
 chdir(realpath(getcwd()));
 
-require 'src/Net/Bazzline/ClassmapGenerator/basicAutoloader.php';
+//autloader for development
+if (file_exists('src/Net/Bazzline/ClassmapGenerator/basicAutoloader.php')) {
+    require 'src/Net/Bazzline/ClassmapGenerator/basicAutoloader.php';
+}
 require 'vendor/autoload.php';
 
 $application = \Net\Bazzline\ClassmapGenerator\Application\Application::create(getcwd());
