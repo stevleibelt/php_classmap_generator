@@ -1,6 +1,3 @@
-#config
-migrate config to symfony component if needed
-
 #filesystem
 migrate filesystemstuff used in create command to symfony component if needed
 
