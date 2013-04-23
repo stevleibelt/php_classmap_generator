@@ -2,6 +2,8 @@
 
 namespace Net\Bazzline\ClassmapGenerator\Command;
 
+use Net\Bazzline\ClassmapGenerator\Filesystem\Iterate\FilepathIterator;
+use Net\Bazzline\ClassmapGenerator\Filesystem\Write\ClassmapFilewriter;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -24,8 +26,10 @@ class CreateCommand extends CommandAbstract
     {
         $this
             ->setName('create')
-            ->setDescription('Creates classmap.')
+            ->setDescription('Creates classmap and autoloader files.')
             ->addOption('force', null, InputOption::VALUE_NONE, 'Overwrites existing files.')
+            ->addOption('classmap', null, InputOption::VALUE_NONE, 'Create only classmap file.')
+            ->addOption('autoloader', null, InputOption::VALUE_NONE, 'Create only autoloader file.')
         ;
     }
 
@@ -48,65 +52,143 @@ class CreateCommand extends CommandAbstract
             $classmapFilepath = realpath($configuration['filepath']['classmap']) .
                 DIRECTORY_SEPARATOR . $configuration['filename']['classmap'];
             $isForced = $input->getOption('force');
+            $onlyCreateClassmapFile = $input->getOption('classmap');
+            $onlyCreateAutoloaderFile = $input->getOption('autoloader');
 
-            $filepathIterator = FilepathIteratorFactory::create(
-                array(
-                    FilepathIteratorFactory::OPTION_BASE_PATH => getcwd(),
-                    FilepathIteratorFactory::OPTION_BLACKISTED_DIRECTORIES => $this->generatePaths($configuration['blacklist']),
-                    FilepathIteratorFactory::OPTION_WHITELISTED_DIRECTORIES => $this->generatePaths($configuration['whitelist'])
-                )
-            );
+            $filepathIterator = $this->getFilepathIterator($configuration);
+            $classmapFileWriter = $this->getClassmapFileWriter($filepathIterator, $classmapFilepath);
 
-            $classmapFileWriter = ClassmapFilewriterFactory::create(
-                array(
-                    ClassmapFilewriterFactory::OPTION_FILE_DATA => $filepathIterator->iterate(),
-                    ClassmapFilewriterFactory::OPTION_FILE_PATH => $classmapFilepath
-                )
-            );
+            if (!$onlyCreateAutoloaderFile) {
+                $classmapWasWritten = $this->writeClassmap($classmapFileWriter, $isForced, $output);
 
-            if ($classmapFileWriter->fileExists()) {
-                if ($isForced) {
-                    $classmapWasWritten = $classmapFileWriter->overwrite();
+                if ($classmapWasWritten) {
+                    $output->writeln('<info>Classmap was written to "' .
+                        $classmapFilepath . '" .</info>');
                 } else {
-                    $output->writeln('<comment>Classmap exists and overwriting was not forced.</comment>');
-                }
-            } else {
-                $classmapWasWritten = $classmapFileWriter->write();
-            }
-
-            if ($configuration['createAutoloaderFile']) {
-                $autoloaderFilewriter = AutoloaderFilewriterFactory::create(
-                    array(
-                        AutoloaderFilewriterFactory::OPTION_FILE_PATH_AUTOLOADER => $autoloaderFilepath,
-                        AutoloaderFilewriterFactory::OPTION_FILE_PATH_CLASSMAP => $classmapFilepath
-                    )
-                );
-
-                if ($autoloaderFilewriter->fileExists()) {
-                    if ($isForced) {
-                        $autoloaderWasWritten = $autoloaderFilewriter->overwrite();
-                    } else {
-                        $output->writeln('<comment>Autoloader exists and overwriting was not forced.</comment>');
-                    }
-                } else {
-                    $autoloaderWasWritten = $autoloaderFilewriter->write();
+                    $output->writeln('<error>Classmap was not written.</error>');
                 }
             }
 
-            if ($classmapWasWritten) {
-                $output->writeln('<info>Classmap was written to "' .
-                    $classmapFilepath . '" .</info>');
-            } else {
-                $output->writeln('<error>Classmap was not written.</error>');
-            }
+            if (!$onlyCreateClassmapFile
+                && $configuration['createAutoloaderFile']) {
+                $autoloaderFileWriter = $this->getAutoloaderFileWriter($autoloaderFilepath, $classmapFilepath);
+                $autoloaderWasWritten = $this->writeAutoloaderFile($autoloaderFileWriter, $isForced, $output);
 
-            if ($autoloaderWasWritten) {
-                $output->writeln('<info>Autoloader was written to "' .
-                   $autoloaderFilepath . '".</info>');
-            } else {
-                $output->writeln('<error>Autoloader was not written.</error>');
+                if ($autoloaderWasWritten) {
+                    $output->writeln('<info>Autoloader was written to "' .
+                        $autoloaderFilepath . '".</info>');
+                } else {
+                    $output->writeln('<error>Autoloader was not written.</error>');
+                }
             }
         }
+    }
+
+    /**
+     * @author stev leibelt
+     * @param $autoloaderFilewriter
+     * @param $isForced
+     * @param OutputInterface $output
+     * @return bool
+     * @since 2013-04-24
+     */
+    private function writeAutoloaderFile($autoloaderFilewriter, $isForced, OutputInterface $output)
+    {
+        $wasWritten = false;
+
+        if ($autoloaderFilewriter->fileExists()) {
+            if ($isForced) {
+                $wasWritten = $autoloaderFilewriter->overwrite();
+            } else {
+                $output->writeln('<comment>Autoloader exists and overwriting was not forced.</comment>');
+            }
+        } else {
+            $wasWritten = $autoloaderFilewriter->write();
+        }
+
+        return $wasWritten;
+    }
+
+    /**
+     * @author stev leibelt
+     * @param ClassmapFilewriter $classmapFileWriter
+     * @param $isForced
+     * @param OutputInterface $output
+     * @return bool
+     * @since 2013-04-24
+     */
+    private function writeClassmap(ClassmapFilewriter $classmapFileWriter, $isForced, OutputInterface $output)
+    {
+        $wasWritten = false;
+
+        if ($classmapFileWriter->fileExists()) {
+            if ($isForced) {
+                $wasWritten = $classmapFileWriter->overwrite();
+            } else {
+                $output->writeln('<comment>Classmap exists and overwriting was not forced.</comment>');
+            }
+        } else {
+            $wasWritten = $classmapFileWriter->write();
+        }
+
+        return $wasWritten;
+    }
+
+    /**
+     * @author stev leibelt
+     * @param array $configuration
+     * @return \Net\Bazzline\ClassmapGenerator\Filesystem\Iterate\FilepathIterator
+     * @since 2013-04-24
+     */
+    private function getFilepathIterator(array $configuration)
+    {
+        $filepathIterator = FilepathIteratorFactory::create(
+            array(
+                FilepathIteratorFactory::OPTION_BASE_PATH => getcwd(),
+                FilepathIteratorFactory::OPTION_BLACKISTED_DIRECTORIES => $this->generatePaths($configuration['blacklist']),
+                FilepathIteratorFactory::OPTION_WHITELISTED_DIRECTORIES => $this->generatePaths($configuration['whitelist'])
+            )
+        );
+
+        return $filepathIterator;
+    }
+
+    /**
+     * @author stev leibelt
+     * @param $autoloaderFilepath
+     * @param $classmapFilepath
+     * @return \Net\Bazzline\ClassmapGenerator\Filesystem\Write\AutoloaderFilewriter
+     * @since 2013-04-24
+     */
+    private function getAutoloaderFileWriter($autoloaderFilepath, $classmapFilepath)
+    {
+        $autoloaderFilewriter = AutoloaderFilewriterFactory::create(
+            array(
+                AutoloaderFilewriterFactory::OPTION_FILE_PATH_AUTOLOADER => $autoloaderFilepath,
+                AutoloaderFilewriterFactory::OPTION_FILE_PATH_CLASSMAP => $classmapFilepath
+            )
+        );
+
+        return $autoloaderFilewriter;
+    }
+
+    /**
+     * @author stev leibelt
+     * @param FilepathIterator $filepathIterator
+     * @param $classmapFilepath
+     * @return \Net\Bazzline\ClassmapGenerator\Filesystem\Write\ClassmapFilewriter
+     * @since 2013-04-24
+     */
+    private function getClassmapFileWriter(FilepathIterator $filepathIterator, $classmapFilepath)
+    {
+        $classmapFileWriter = ClassmapFilewriterFactory::create(
+            array(
+                ClassmapFilewriterFactory::OPTION_FILE_DATA => $filepathIterator->iterate(),
+                ClassmapFilewriterFactory::OPTION_FILE_PATH => $classmapFilepath
+            )
+        );
+
+        return $classmapFileWriter;
     }
 
     /**
