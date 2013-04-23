@@ -36,10 +36,17 @@ class CreateCommand extends CommandAbstract
     public function execute(InputInterface $input, OutputInterface $output)
     {
         $configuration = $this->getApplication()->getConfiguration();
+        $classmapWasWritten = false;
+        $autoloaderWasWritten = false;
+
         if (count($configuration) < 1) {
             $output->writeln('<error>Configuration is empty or does not exist.</error>');
             $output->writeln('<error>Try to call "classmap_generator.php configure".</error>');
         } else {
+            $autoloaderFilePath = realpath($configuration['filepath']['autoloader']) .
+                DIRECTORY_SEPARATOR . $configuration['filename']['autoloader'];
+            $classmapFilePath = realpath($configuration['filepath']['classmap']) .
+                DIRECTORY_SEPARATOR . $configuration['filename']['classmap'];
             $isForced = $input->getOption('force');
             $filepathIterator = FilepathIteratorFactory::create(
                 array(
@@ -52,52 +59,51 @@ class CreateCommand extends CommandAbstract
             $classmapFileWriter = ClassmapFilewriterFactory::create(
                 array(
                     ClassmapFilewriterFactory::OPTION_FILE_DATA => $filepathIterator->iterate(),
-                    ClassmapFilewriterFactory::OPTION_FILE_PATH => realpath($configuration['filepath']['classmap']) . DIRECTORY_SEPARATOR . $configuration['filename']['classmap']
+                    ClassmapFilewriterFactory::OPTION_FILE_PATH => $classmapFilePath
                 )
             );
+
             if ($classmapFileWriter->fileExists()) {
                 if ($isForced) {
-                    if ($classmapFileWriter->overwrite()) {
-                        $output->writeln('<info>Classmap was written</info>');
-                    } else {
-                        $output->writeln('<error>Classmap was not written</error>');
-                    }
+                    $classmapWasWritten = $classmapFileWriter->overwrite();
                 } else {
                     $output->writeln('<comment>Classmap exists and overwriting was not forced.</comment>');
                 }
             } else {
-                if ($classmapFileWriter->write()) {
-                    $output->writeln('<info>Classmap was written</info>');
-                } else {
-                    $output->writeln('<error>Classmap was not written</error>');
-                }
+                $classmapWasWritten = $classmapFileWriter->write();
             }
 
             if ($configuration['createAutoloaderFile']) {
                 $autoloaderFilewriter = AutoloaderFilewriterFactory::create(
                     array(
-                        AutoloaderFilewriterFactory::OPTION_FILE_PATH_AUTOLOADER => realpath($configuration['filepath']['autoloader']) . DIRECTORY_SEPARATOR . $configuration['filename']['autoloader'],
-                        AutoloaderFilewriterFactory::OPTION_FILE_PATH_CLASSMAP => realpath($configuration['filepath']['classmap']) . DIRECTORY_SEPARATOR . $configuration['filename']['classmap']
+                        AutoloaderFilewriterFactory::OPTION_FILE_PATH_AUTOLOADER => $autoloaderFilePath,
+                        AutoloaderFilewriterFactory::OPTION_FILE_PATH_CLASSMAP => $classmapFilePath
                     )
                 );
 
                 if ($autoloaderFilewriter->fileExists()) {
                     if ($isForced) {
-                        if ($autoloaderFilewriter->overwrite()) {
-                            $output->writeln('<info>Autoloader was written.</info>');
-                        } else {
-                            $output->writeln('<error>Autoloader was not written.</error>');
-                        }
+                        $autoloaderWasWritten = $autoloaderFilewriter->overwrite();
                     } else {
                         $output->writeln('<comment>Autoloader exists and overwriting was not forced.</comment>');
                     }
                 } else {
-                    if ($autoloaderFilewriter->write()) {
-                        $output->writeln('<info>Autoloader was written.</info>');
-                    } else {
-                        $output->writeln('<error>Autoloader was not written.</error>');
-                    }
+                    $autoloaderWasWritten = $autoloaderFilewriter->write();
                 }
+            }
+
+            if ($classmapWasWritten) {
+                $output->writeln('<info>Classmap was written to "' .
+                    $classmapFilePath . '" .</info>');
+            } else {
+                $output->writeln('<error>Classmap was not written.</error>');
+            }
+
+            if ($autoloaderWasWritten) {
+                $output->writeln('<info>Autoloader was written to "' .
+                    $autoloaderFilePath . '".</info>');
+            } else {
+                $output->writeln('<error>Autoloader was not written.</error>');
             }
         }
     }
