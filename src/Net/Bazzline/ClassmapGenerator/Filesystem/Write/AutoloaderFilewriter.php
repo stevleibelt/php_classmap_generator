@@ -73,7 +73,7 @@ function autoloadFromFilesystem_$uniqueIdentifier(\$className)
         \$filePath = realpath(\$includePath . DIRECTORY_SEPARATOR . \$fileName);
 
         if (file_exists(\$filePath)) {
-            require \$filePath;
+            require_once \$filePath;
 
             break;
         }
@@ -81,9 +81,21 @@ function autoloadFromFilesystem_$uniqueIdentifier(\$className)
 }
 EOC;
 
+        $autoloaderFullFilepathAsArray = explode(DIRECTORY_SEPARATOR, $this->getFilepath());
+        $classmapFullFilepathAsArray = explode(DIRECTORY_SEPARATOR, $this->getFilePathClassmap());
+
+        $fullFilepathAsArray = array_intersect($autoloaderFullFilepathAsArray, $classmapFullFilepathAsArray);
+        $autoaderRelativeFilepathAsArray = array_diff($autoloaderFullFilepathAsArray, $classmapFullFilepathAsArray);
+        $classmapRelativeFilepathAsArray = array_diff($classmapFullFilepathAsArray, $autoloaderFullFilepathAsArray);
+
+        $numberOfSubdirectoriesFromAutoloaderFilepath = count($autoaderRelativeFilepathAsArray) - 1;    //-1 because last entry is autoloader filename
+
         if (file_exists($this->getFilePathClassmap())) {
-            $startPositionOfFilename = strrpos($this->getFilePathClassmap(), DIRECTORY_SEPARATOR) + strlen(DIRECTORY_SEPARATOR);
+            $startPositionOfFilename = strrpos($this->getFilePathClassmap(), DIRECTORY_SEPARATOR)
+                + strlen(DIRECTORY_SEPARATOR);
             $fileNameClassmap = substr($this->getFilePathClassmap(), $startPositionOfFilename);
+            $relativeFilepathForClassmap = str_repeat('../', $numberOfSubdirectoriesFromAutoloaderFilepath) .
+                implode(DIRECTORY_SEPARATOR, $classmapRelativeFilepathAsArray);
             $data .= <<<EOC
 
 
@@ -94,16 +106,16 @@ EOC;
  */
 function autoloadFromFilesystemWithClassmap_$uniqueIdentifier(\$classname)
 {
-    \$classnameToFilepath = require '$fileNameClassmap';
+    \$classnameToFilepath = require_once '$relativeFilepathForClassmap';
 
     if (isset(\$classnameToFilepath[\$classname])) {
-        require \$classnameToFilepath[\$classname];
+        require_once \$classnameToFilepath[\$classname];
     } else {
         return false;
     }
 }
 
-if (file_exists('$fileNameClassmap')) {
+if (file_exists('$relativeFilepathForClassmap')) {
     spl_autoload_register('autoloadFromFilesystemWithClassmap_$uniqueIdentifier');
 }
 
