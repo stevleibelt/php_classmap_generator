@@ -74,6 +74,7 @@ class ConfigureCommand extends CommandAbstract
     {
         $configuration = array();
         $doFullConfiguration = $input->getOption('full');
+        $overwrite = false;
 
         if (file_exists('classmap_generator_configuration.php')) {
             $overwrite = $this->askForOverwriteIfFileExists($input, $output);
@@ -90,7 +91,7 @@ class ConfigureCommand extends CommandAbstract
             $configuration['defaultTimezone'] = $this->defaultTimezone;
             $configuration['filepath'] = array(
                 'classmap' => $this->defaultPath,
-                'autoloader' => $this->defaultPathu,
+                'autoloader' => $this->defaultPath,
                 'configuration' => $this->defaultPath
             );
             $configuration['blacklist'] = $this->defaultBlacklist;

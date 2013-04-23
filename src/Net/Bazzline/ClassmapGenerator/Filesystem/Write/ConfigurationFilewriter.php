@@ -20,7 +20,7 @@ class ConfigurationFilewriter extends FilewriterAbstract
         }
 
         $date = date('Y-m-d H:i:s');
-        $createAutoloaderFile = $this->getDataValue('createAutoloaderFile', false);
+        $createAutoloaderFile = ($this->getDataValue('createAutoloaderFile', false)) ? 'true' : 'false';
         $defaultTimezone = $this->getDataValue('defaultTimezone', 'Europe/Berlin');
         $data = <<<EOC
 <?php
