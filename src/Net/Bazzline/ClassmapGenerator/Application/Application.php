@@ -72,6 +72,6 @@ class Application extends SymfonyApplication
      */
     public function getConfiguration()
     {
-        return $this->configuration['net_bazzline'];
+        return (isset($this->configuration['net_bazzline'])) ? $this->configuration['net_bazzline'] : $this->configuration;
     }
 }
