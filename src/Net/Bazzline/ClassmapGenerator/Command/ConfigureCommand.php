@@ -89,9 +89,9 @@ class ConfigureCommand extends CommandAbstract
         } else {
             $configuration['defaultTimezone'] = $this->defaultTimezone;
             $configuration['filepath'] = array(
-                'classmap' => $classmapFilepath,
-                'autoloader' => $autoloaderFilepath,
-                'configuration' => $configurationFilepath
+                'classmap' => $this->defaultPath,
+                'autoloader' => $this->defaultPathu,
+                'configuration' => $this->defaultPath
             );
             $configuration['blacklist'] = $this->defaultBlacklist;
         }
