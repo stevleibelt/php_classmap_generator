@@ -7,8 +7,10 @@ Manual
 ======
 NAME
         php - classmap generator for psr-2 based php projects
+
 SYNOPSIS
         index.php [OPTION]
+
 DESCRIPTION
         Creates classmap by iterating over project directories.
 
