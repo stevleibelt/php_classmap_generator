@@ -5,6 +5,10 @@ configure
 ---------
 only ask for autoloadername if autoloader should be written.
 
+create
+------
+add progressbar for creation (if possible)
+
 filesystem
 ==========
 evaluate if it is usefull to use symfony componten filesystem
