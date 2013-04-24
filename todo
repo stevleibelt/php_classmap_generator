@@ -1,6 +1,15 @@
-#filesystem
+command
+=======
+
+configure
+---------
+only ask for autoloadername if autoloader should be written.
+
+filesystem
+==========
 evaluate if it is usefull to use symfony componten filesystem
 -> migrate filesystem
 
-#test
+unittest
+========
 write unittests
