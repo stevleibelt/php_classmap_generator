@@ -27,9 +27,21 @@ class CreateCommand extends CommandAbstract
         $this
             ->setName('create')
             ->setDescription('Creates classmap and autoloader files.')
-            ->addOption('force', null, InputOption::VALUE_NONE, 'Overwrites existing files.')
-            ->addOption('classmap', null, InputOption::VALUE_NONE, 'Create only classmap file.')
-            ->addOption('autoloader', null, InputOption::VALUE_NONE, 'Create only autoloader file.')
+            ->setDefinition(
+                array(
+                    new InputOption('force', null, InputOption::VALUE_NONE, 'Overwrites existing files.'),
+                    new InputOption('classmap', null, InputOption::VALUE_NONE, 'Only create classmap file.'),
+                    new InputOption('autoloader', null, InputOption::VALUE_NONE, 'Only create autoloader file.')
+                )
+            )
+            ->setHelp(
+                'The <info>%command.name%</info> command guides you through the ' . PHP_EOL .
+                'creation of a configuration file for this console application ' . PHP_EOL .
+                'by asking several questions.' . PHP_EOL .
+                PHP_EOL .
+                'Each question has a default value. That means, you only have ' . PHP_EOL .
+                'to hit enter multiple times to generate a configuration file.'
+            )
         ;
     }
 
