@@ -8,6 +8,8 @@ only ask for autoloadername if autoloader should be written.
 create
 ------
 add progressbar for creation (if possible)
+use http://symfony.com/doc/current/components/console/helpers/progresshelper.html
+->refactore FilepathIterator::iterate()
 
 filesystem
 ==========
