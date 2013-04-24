@@ -1,5 +1,6 @@
 #filesystem
-migrate filesystemstuff used in create command to symfony component if needed
+evaluate if it is usefull to use symfony componten filesystem
+-> migrate filesystem
 
 #test
-write them
+write unittests
