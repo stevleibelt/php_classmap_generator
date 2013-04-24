@@ -61,8 +61,20 @@ class ConfigureCommand extends CommandAbstract
     {
         $this
             ->setName('configure')
+            ->setDefinition(
+                array(
+                    new InputOption('--detail', '-d', InputOption::VALUE_NONE, 'Do a full configuration with all available options.')
+                )
+            )
             ->setDescription('Configures classmap generator')
-            ->addOption('full', null, InputOption::VALUE_NONE, 'Full configuration.')
+            ->setHelp(
+                'The <info>%command.name%</info> command guides you through the ' . PHP_EOL .
+                    'creation of a configuration file for this console application ' . PHP_EOL .
+                    'by asking several questions.' . PHP_EOL .
+                    PHP_EOL .
+                    'Each question has a default value. That means, you only have ' . PHP_EOL .
+                    'to hit enter multiple times to generate a configuration file.'
+            )
         ;
     }
 
@@ -73,7 +85,7 @@ class ConfigureCommand extends CommandAbstract
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $configuration = array();
-        $doFullConfiguration = $input->getOption('full');
+        $doDetailedConfiguration = $input->getOption('detail');
         $overwrite = false;
 
         if (file_exists('classmap_generator_configuration.php')) {
@@ -83,7 +95,7 @@ class ConfigureCommand extends CommandAbstract
         $configuration['filename'] = $this->askForFilenames($input, $output);
         $configuration['whitelist'] = $this->askForWhitelistPaths($input, $output);
 
-        if ($doFullConfiguration) {
+        if ($doDetailedConfiguration) {
             $configuration['defaultTimezone'] = $this->askForDefaultTimezone($input, $output);
             $configuration['filepath'] = $this->askForFilepaths($input, $output);
             $configuration['blacklist'] = $this->askForBlacklistPaths($input, $output);
