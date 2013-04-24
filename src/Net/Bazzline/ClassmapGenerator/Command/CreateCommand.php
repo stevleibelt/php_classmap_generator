@@ -35,12 +35,10 @@ class CreateCommand extends CommandAbstract
                 )
             )
             ->setHelp(
-                'The <info>%command.name%</info> command guides you through the ' . PHP_EOL .
-                'creation of a configuration file for this console application ' . PHP_EOL .
-                'by asking several questions.' . PHP_EOL .
+                'The <info>%command.name%</info> command is generating and ' . PHP_EOL .
+                'writing the classmap and autoloader file.' . PHP_EOL .
                 PHP_EOL .
-                'Each question has a default value. That means, you only have ' . PHP_EOL .
-                'to hit enter multiple times to generate a configuration file.'
+                'You have to run <info>configure</info> before you can use <info>%command.name%</info>'
             )
         ;
     }
