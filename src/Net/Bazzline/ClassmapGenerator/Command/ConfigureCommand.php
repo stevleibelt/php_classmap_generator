@@ -231,7 +231,6 @@ class ConfigureCommand extends CommandAbstract
         $defaultPath = $this->defaultPath;
         $questionClassmapFilepath = '<question>Please enter the path where you want to store the classmap file (default is "' . $defaultPath . '").</question>';
         $questionAutoloaderFilepath = '<question>Please enter the path where you want to store the autoloader file (default is "' . $defaultPath . '").</question>';
-        $questionConfigurationFilepath = '<question>Please enter the path where you want to store the configuration file (default is "' . $defaultPath . '").</question>';
         $validator = function ($answer) {
                 if ((!is_dir(realpath($answer)))
                     || (!is_writeable(realpath($answer)))) {
@@ -245,12 +244,10 @@ class ConfigureCommand extends CommandAbstract
 
         $classmapFilepath = $this->askAndValidate($output, $questionClassmapFilepath, $validator, false, $defaultPath);
         $autoloaderFilepath = $this->askAndValidate($output, $questionAutoloaderFilepath, $validator, false, $defaultPath);
-        $configurationFilepath = $this->askAndValidate($output, $questionConfigurationFilepath, $validator, false, $defaultPath);
 
         return array(
             'classmap' => $classmapFilepath,
-            'autoloader' => $autoloaderFilepath,
-            'configuration' => $configurationFilepath
+            'autoloader' => $autoloaderFilepath
         );
     }
 
