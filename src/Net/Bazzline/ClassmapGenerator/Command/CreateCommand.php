@@ -29,9 +29,9 @@ class CreateCommand extends CommandAbstract
             ->setDescription('Creates classmap and autoloader files.')
             ->setDefinition(
                 array(
-                    new InputOption('force', null, InputOption::VALUE_NONE, 'Overwrites existing files.'),
-                    new InputOption('classmap', null, InputOption::VALUE_NONE, 'Only create classmap file.'),
-                    new InputOption('autoloader', null, InputOption::VALUE_NONE, 'Only create autoloader file.')
+                    new InputOption('--force', '-f', InputOption::VALUE_NONE, 'Overwrites existing files.'),
+                    new InputOption('--classmap', '-c', InputOption::VALUE_NONE, 'Only create classmap file.'),
+                    new InputOption('--autoloader', '-a', InputOption::VALUE_NONE, 'Only create autoloader file.')
                 )
             )
             ->setHelp(
