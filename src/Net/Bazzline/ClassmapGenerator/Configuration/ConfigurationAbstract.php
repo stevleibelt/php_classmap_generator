@@ -245,7 +245,9 @@ abstract class ConfigurationAbstract implements ConfigurationInterface
             );
         }
 
-        $this->filenameAutoloader = $filename;
+
+        $this->filenameAutoloader = ($this->stringEndsWith($filename, '.php')
+            ? $filename : $filename . '.php';
     }
 
     /**
@@ -258,7 +260,7 @@ abstract class ConfigurationAbstract implements ConfigurationInterface
     public function getFilenameAutoloader()
     {
         return (!is_null($this->filenameAutoloader)) ?
-            $this->filenameAutoloader : 'generated_autoloader';
+            $this->filenameAutoloader : 'generated_autoloader.php';
     }
 
     /**
@@ -280,7 +282,8 @@ abstract class ConfigurationAbstract implements ConfigurationInterface
             );
         }
 
-        $this->filenameClassmap = $filename;
+        $this->filenameClassmap = ($this->stringEndsWith($filename, '.php')
+            ? $filename : $filename . '.php';
     }
 
     /**
@@ -293,7 +296,7 @@ abstract class ConfigurationAbstract implements ConfigurationInterface
     public function getFilenameClassmap()
     {
         return (!is_null($this->filenameClassmap)) ?
-            $this->filenameClassmap : 'generated_classmap';
+            $this->filenameClassmap : 'generated_classmap.php';
     }
 
     /**
@@ -418,5 +421,22 @@ abstract class ConfigurationAbstract implements ConfigurationInterface
     public function getWhitelist()
     {
         return (!is_null($this->whitelist)) ? $this->whitelist : array();
+    }
+
+    /**
+     * Validates if the given string ends with a string.
+     *
+     * @param string $string - the string to validate the ending
+     * @param string $endsWith - the string to validate against
+     *
+     * @return bool
+     * @author stev leibelt
+     * @since 2013-04-24
+     */
+    protected function stringEndsWith($string, $endsWith) {
+        $lengthOfEndsWith = strlen($endsWith);
+        $stringEnding = substr($string, -$lengthOfEndsWith);
+
+        return ($stringEnding == $endsWith);
     }
 }
