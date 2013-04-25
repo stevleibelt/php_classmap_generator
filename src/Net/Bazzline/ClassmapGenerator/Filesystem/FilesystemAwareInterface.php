@@ -17,7 +17,7 @@ interface FilesystemAwareInterface
     /**
      * Getter for filesystem dependency injection
      *
-     * @return \Net\Bazzline\ClassmapGenerator\Filesystem\Filesystem $filesystem - filesystem
+     * @return \Net\Bazzline\ClassmapGenerator\Filesystem\Filesystem
      * @author stev leibelt
      * @since 2013-04-25
      */
