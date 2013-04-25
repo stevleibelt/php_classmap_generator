@@ -6,11 +6,20 @@
 
 namespace Net\Bazzline\ClassmapGenerator\Filesystem\Write;
 
+use Net\Bazzline\ClassmapGenerator\Configuration\ConfigurationAwareInterface;
+use Net\Bazzline\ClassmapGenerator\Configuration\ConfigurationInterface;
 use Net\Bazzline\ClassmapGenerator\Filesystem\FilesystemAwareInterface;
 use Net\Bazzline\ClassmapGenerator\Filesystem\Filesystem;
 
 abstract class FilewriterAbstract implements WriterInterface, FilesystemAwareInterface
 {
+    /**
+     * @var \Net\Bazzline\ClassmapGenerator\Configuration\ConfigurationInterface;
+     * @author stev leibelt
+     * @since 2013-04-25
+     */
+    private $configuration;
+
     /**
      * @var array
      * @author stev leibelt
@@ -25,6 +34,11 @@ abstract class FilewriterAbstract implements WriterInterface, FilesystemAwareInt
      */
     private $filepath;
 
+    /**
+     * @var \Net\Bazzline\ClassmapGenerator\Filesystem\Filesystem
+     * @author stev leibelt
+     * @since 2013-04-25
+     */
     private $filesystem;
 
     /**
@@ -105,6 +119,31 @@ abstract class FilewriterAbstract implements WriterInterface, FilesystemAwareInt
     public function setFilesystem(Filesystem $filesystem)
     {
         $this->filesystem = $filesystem;
+    }
+
+    /**
+     * Getter for configuration
+     *
+     * @return \Net\Bazzline\ClassmapGenerator\Configuration\ConfigurationInterface
+     * @author stev leibelt
+     * @since 2013-04-25
+     */
+    public function getConfiguration()
+    {
+        return $this->configuration;
+    }
+
+    /**
+     * Setter for configuration
+     *
+     * @param \Net\Bazzline\ClassmapGenerator\Configuration\ConfigurationInterface $configuration - configuration
+     *
+     * @author stev leibelt
+     * @since 2013-04-25
+     */
+    public function setConfiguration(ConfigurationInterface $configuration)
+    {
+        $this->configuration = $configuration;
     }
 
     /**

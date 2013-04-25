@@ -9,10 +9,12 @@ namespace Net\Bazzline\ClassmapGenerator\Filesystem\Write;
 class ClassmapFilewriter extends FilewriterAbstract
 {
     /**
-     * @author stev leibelt
+     * Writes content of the file
+     *
      * @return boolean
-     * @since 2013-02-28
      * @throws \RuntimeException
+     * @author stev leibelt
+     * @since 2013-02-28
      */
     public function write()
     {
