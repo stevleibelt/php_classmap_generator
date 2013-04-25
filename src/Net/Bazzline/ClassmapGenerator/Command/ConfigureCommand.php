@@ -2,6 +2,7 @@
 
 namespace Net\Bazzline\ClassmapGenerator\Command;
 
+use Net\Bazzline\ClassmapGenerator\Configuration\ConfigurationInterface;
 use Net\Bazzline\ClassmapGenerator\Filesystem\Write\ConfigurationFilewriter;
 use RuntimeException;
 use Symfony\Component\Console\Input\InputArgument;
@@ -16,42 +17,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ConfigureCommand extends CommandAbstract
 {
     /**
+     * @var \Net\Bazzline\ClassmapGenerator\Configuration\ConfigurationInterface
+     *
      * @author stev leibelt
-     * @since 2013-04-23
-     * @var array
+     * @since 2013-04-25
      */
-    private $defaultBlacklist;
-
-    /**
-     * @author stev leibelt
-     * @since 2013-04-23
-     * @var
-     */
-    private $defaultPath;
-
-    /**
-     * @author stev leibelt
-     * @since 2013-04-23
-     * @var string
-     */
-    private $defaultTimezone;
-
-    /**
-     * @author stev leibelt
-     * @param null $name
-     * @since 2013-04-23
-     */
-    public function __construct($name = null)
-    {
-        parent::__construct($name);
-
-        $this->defaultBlacklist = array(
-            '.',
-            '..'
-        );
-        $this->defaultPath = '';
-        $this->defaultTimezone = 'Europe/Berlin';
-    }
+    private $configuration;
 
     /**
      * @author stev leibelt
@@ -84,29 +55,22 @@ class ConfigureCommand extends CommandAbstract
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $configuration = array();
+        $this->configuration = $this->getApplication()->getConfiguration();
+
         $doDetailedConfiguration = $input->getOption('detail');
         $overwrite = false;
 
         if (file_exists('classmap_generator_configuration.php')) {
             $overwrite = $this->askForOverwriteIfFileExists($input, $output);
         }
-        $configuration['createAutoloaderFile'] = $this->askCreationOfAutoloaderFile($input, $output);
-        $configuration['filename'] = $this->askForFilenames($input, $output);
-        $configuration['whitelist'] = $this->askForWhitelistPaths($input, $output);
+        $this->askCreationOfAutoloaderFile($input, $output);
+        $this->askForFilenames($input, $output);
+        $this->askForWhitelistPaths($input, $output);
 
         if ($doDetailedConfiguration) {
-            $configuration['defaultTimezone'] = $this->askForDefaultTimezone($input, $output);
-            $configuration['filepath'] = $this->askForFilepaths($input, $output);
-            $configuration['blacklist'] = $this->askForBlacklistPaths($input, $output);
-        } else {
-            $configuration['defaultTimezone'] = $this->defaultTimezone;
-            $configuration['filepath'] = array(
-                'classmap' => $this->defaultPath,
-                'autoloader' => $this->defaultPath,
-                'configuration' => $this->defaultPath
-            );
-            $configuration['blacklist'] = $this->defaultBlacklist;
+            $this->askForBlacklistPaths($input, $output);
+            $this->askForFilepaths($input, $output);
+            $this->askForDefaultTimezone($input, $output);
         }
 
         $fileName = 'classmap_generator_configuration.php';
@@ -114,7 +78,7 @@ class ConfigureCommand extends CommandAbstract
 
         $output->writeln('<info>Writing configuration to "' . $filePath .
             DIRECTORY_SEPARATOR . $fileName . '</info>');
-        if ($this->writeConfiguration($configuration, $fileName, $filePath, $overwrite)) {
+        if ($this->writeConfiguration($fileName, $filePath, $overwrite)) {
             $output->writeln('<info>Configuration was written.</info>');
         } else {
             $output->writeln('<error>Configuration was not written.</error>');
@@ -122,19 +86,19 @@ class ConfigureCommand extends CommandAbstract
     }
 
     /**
-     * @author stev leibelt
-     * @param array $data
      * @param string $fileName
      * @param string $filePath
      * @param boolean $overwrite
+     *
      * @return bool
+     * @author stev leibelt
      * @since 2013-04-21
      */
-    private function writeConfiguration(array $data, $fileName, $filePath, $overwrite = false)
+    private function writeConfiguration($fileName, $filePath, $overwrite = false)
     {
         $writer = new ConfigurationFilewriter();
         $writer->setFilePath($filePath . DIRECTORY_SEPARATOR . $fileName);
-        $writer->setFiledata($data);
+        $writer->setFiledata($this->configuration->toSource());
 
         if ($overwrite) {
             return $writer->overwrite();
@@ -171,15 +135,14 @@ class ConfigureCommand extends CommandAbstract
     }
 
     /**
-     * @author stev leibelt
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return boolean
+     *
+     * @author stev leibelt
      * @since 2013-04-21
      */
     private function askCreationOfAutoloaderFile(InputInterface $input, OutputInterface $output)
     {
-        $dialog = $this->getHelperSet()->get('dialog');
         $default = 'y';
         $question = '<question>Should i create a autoloader file (y/n - default is "y")?</question>';
         $validator = function ($answer) {
@@ -192,22 +155,24 @@ class ConfigureCommand extends CommandAbstract
 
                 return $answer;
             };
-        $createAutoloaderFile = ($this->askAndValidate($output, $question, $validator, false, $default) == 'y') ? true : false;
-
-        return $createAutoloaderFile;
+        $this
+            ->configuration
+            ->setCreateAutoloaderFile(
+                ($this->askAndValidate($output, $question, $validator, false, $default) == 'y') ? true : false
+            );
     }
 
     /**
-     * @author stev leibelt
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return array
+     *
+     * @author stev leibelt
      * @since 2013-04-21
      */
     private function askForFilenames(InputInterface $input, OutputInterface $output)
     {
-        $defaultClassmapFilename = 'generated_classmap';
-        $defaultAutoloaderFilename = 'generated_autoloader';
+        $defaultAutoloaderFilename = $this->configuration->getFilenameAutoloader();
+        $defaultClassmapFilename = $this->configuration->getFilenameClassmap();
         $questionClassmapFilename = '<question>Please enter a name for the classmap file (default is "' . $defaultClassmapFilename . '".</question>' . PHP_EOL .
                 '<comment>You don\'t have to suffix the file with ".php".</comment>';
         $questionAutoloaderFilename = '<question>Please enter a name for the autoloader file (default is "' . $defaultAutoloaderFilename . '"</question>.' . PHP_EOL .
@@ -222,25 +187,31 @@ class ConfigureCommand extends CommandAbstract
                 return $answer;
             };
 
-        $classmapFilename = $this->askAndValidate($output, $questionClassmapFilename, $validator, false, $defaultClassmapFilename);
-        $autoloaderFilename = $this->askAndValidate($output, $questionAutoloaderFilename, $validator, false, $defaultAutoloaderFilename);
-
-        return array(
-            'classmap' => $classmapFilename . '.php',
-            'autoloader' => $autoloaderFilename . '.php'
-        );
+        if ($this->configuration->createAutoloaderFile()) {
+            $this
+                ->configuration
+                ->setFilenameAutoloader(
+                    $this->askAndValidate($output, $questionClassmapFilename, $validator, false, $defaultAutoloaderFilename
+                    )
+                );
+        }
+        $this
+            ->configuration
+            ->setFilenameClassmap(
+                $this->askAndValidate($output, $questionAutoloaderFilename, $validator, false, $defaultClassmapFilename)
+            );
     }
 
     /**
-     * @author stev leibelt
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return array
+     *
+     * @author stev leibelt
      * @since 2013-04-21
      */
     private function askForFilepaths(InputInterface $input, OutputInterface $output)
     {
-        $defaultPath = $this->defaultPath;
+        $defaultPath = $this->configuration->getFilepathClassmap();
         $questionClassmapFilepath = '<question>Please enter the path where you want to store the classmap file (default is "' . $defaultPath . '").</question>';
         $questionAutoloaderFilepath = '<question>Please enter the path where you want to store the autoloader file (default is "' . $defaultPath . '").</question>';
         $validator = function ($answer) {
@@ -254,20 +225,23 @@ class ConfigureCommand extends CommandAbstract
                 return $answer;
             };
 
-        $classmapFilepath = $this->askAndValidate($output, $questionClassmapFilepath, $validator, false, $defaultPath);
-        $autoloaderFilepath = $this->askAndValidate($output, $questionAutoloaderFilepath, $validator, false, $defaultPath);
-
-        return array(
-            'classmap' => $classmapFilepath,
-            'autoloader' => $autoloaderFilepath
-        );
+        $this
+            ->configuration
+            ->setFilepathAutoloader(
+                $this->askAndValidate($output, $questionAutoloaderFilepath, $validator, false, $defaultPath)
+            );
+        $this
+            ->configuration
+            ->setFilepathClassmap(
+                $this->askAndValidate($output, $questionClassmapFilepath, $validator, false, $defaultPath)
+            );
     }
 
     /**
-     * @author stev leibelt
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return array
+     *
+     * @author stev leibelt
      * @since 2013-04-21
      */
     private function askForWhitelistPaths(InputInterface $input, OutputInterface $output)
@@ -296,21 +270,23 @@ class ConfigureCommand extends CommandAbstract
             $whitelist[] = $path;
         }
 
-        return $whitelist;
+        $this
+            ->configuration
+            ->setWhitelist($whitelist);
     }
 
     /**
-     * @author stev leibelt
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return array
+     *
+     * @author stev leibelt
      * @since 2013-04-21
      */
     private function askForBlacklistPaths(InputInterface $input, OutputInterface $output)
     {
         $default = '';
         $question = '<question>Enter path you want to blacklist.</question>';
-        $blacklist = $this->defaultBlacklist;
+        $blacklist = $this->configuration->getBlacklist();
 
         $validator = function ($answer) {
             if (($answer != '')
@@ -333,19 +309,21 @@ class ConfigureCommand extends CommandAbstract
             $blacklist[] = $path;
         }
 
-        return $blacklist;
+        $this
+            ->configuration
+            ->setBlacklist($blacklist);
     }
 
     /**
-     * @author stev leibelt
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return string
+     *
+     * @author stev leibelt
      * @since 2013-04-21
      */
     private function askForDefaultTimezone(InputInterface $input, OutputInterface $output)
     {
-        $question = '<question>Please enter your default timezone (default is "' . $this->defaultTimezone . '").</question>';
+        $question = '<question>Please enter your default timezone (default is "' . $this->configuration->getDefaultTimezone() . '").</question>';
         $validator = function ($answer) {
                 if (($answer != '')
                     && (strpos($answer, '/') === false)) {
@@ -357,8 +335,10 @@ class ConfigureCommand extends CommandAbstract
                 return $answer;
             };
 
-        $defaultTimezone = $this->askAndValidate($output, $question, $validator, false, $this->defaultTimezone);
-
-        return (string) $defaultTimezone;
+        $this
+            ->configuration
+            ->setDefaultTimezone(
+                $this->askAndValidate($output, $question, $validator, false, $this->configuration->getDefaultTimezone())
+            );
     }
 }

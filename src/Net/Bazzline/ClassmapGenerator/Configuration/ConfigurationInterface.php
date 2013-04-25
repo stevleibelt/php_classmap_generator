@@ -21,7 +21,7 @@ interface ConfigurationInterface
      * @author stev leibelt
      * @since 2013-04-25
      */
-    public static function createFromSource($source, $namespace = ConfigurationAbstract::DEFAULT_NAMESPACE)
+    public static function createFromSource($source, $namespace = ConfigurationAbstract::DEFAULT_NAMESPACE);
 
     /**
      * Transform existing configuration to the source.

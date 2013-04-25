@@ -20,17 +20,22 @@ class ClassmapFilewriter extends FilewriterAbstract
             return false;
         }
 
-        if (count($this->getFiledata()) > 0) {
-            $head = '<?php' . PHP_EOL .
-                '/**' . PHP_EOL .
-                '* Created with Net\Bazzline\ClassmapGenerator' . PHP_EOL .
-                '* @author stev leibelt' . PHP_EOL .
-                '* @since ' . date('Y-m-d H:i:s') . PHP_EOL .
-                '*/' . PHP_EOL .
-                '' . PHP_EOL .
-                'return array(';
-            $filedata = '';
+        $date = date('Y-m-d H:i:s');
 
+        $head = <<<EOC
+<?php
+
+/**
+* Created with Net\Bazzline\ClassmapGenerator
+* @author stev leibelt
+* @since $date
+*/
+
+return array(
+EOC;
+        $filedata = '';
+
+        if (count($this->getFiledata()) > 0) {
             foreach ($this->getFiledata() as $fileName => $className) {
                 $filedata .= PHP_EOL . '    \'' . $fileName . '\' => \'' . $className . '\',';
             }
@@ -38,12 +43,10 @@ class ClassmapFilewriter extends FilewriterAbstract
             if (strlen($filedata) > 0) {
                 $filedata = substr($filedata, 0, -1) . PHP_EOL;
             }
-
-            $bottom = ');';
-
-            return (file_put_contents($this->getFilepath(), $head . $filedata . $bottom) !== false);
-        } else {
-            return false;
         }
+
+        $bottom = ');';
+
+        return (file_put_contents($this->getFilepath(), $head . $filedata . $bottom) !== false);
     }
 }

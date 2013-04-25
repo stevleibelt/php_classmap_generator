@@ -24,6 +24,7 @@ class ConfigurationFilewriter extends FilewriterAbstract
         $defaultTimezone = $this->getDataValue('defaultTimezone', 'Europe/Berlin');
         $data = <<<EOC
 <?php
+
 /**
  * Configuration file for classmap generator
  * @author stev leibelt

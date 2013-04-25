@@ -160,7 +160,7 @@ abstract class ConfigurationAbstract implements ConfigurationInterface
      * @author stev leibelt
      * @since 2013-04-25
      */
-    private $whiteist;
+    private $whitelist;
 
     /**
      * Sets the flag if a autoloader file should be created.
@@ -328,7 +328,7 @@ abstract class ConfigurationAbstract implements ConfigurationInterface
     public function getFilepathAutoloader()
     {
         return (!is_null($this->filepathAutoloader)) ?
-            $this->filepathAutoloader : '';
+            $this->filepathAutoloader : '.';
     }
 
     /**
@@ -363,7 +363,7 @@ abstract class ConfigurationAbstract implements ConfigurationInterface
     public function getFilepathClassmap()
     {
         return (!is_null($this->filepathClassmap)) ?
-            $this->filepathClassmap : '';
+            $this->filepathClassmap : '.';
     }
 
     /**
@@ -390,7 +390,7 @@ abstract class ConfigurationAbstract implements ConfigurationInterface
      */
     public function getBlacklist()
     {
-        return (!is_null($this->blacklist)) ? $this->blacklist : array();
+        return (!is_null($this->blacklist)) ? $this->blacklist : array('.', '..');
     }
 
     /**
@@ -405,7 +405,7 @@ abstract class ConfigurationAbstract implements ConfigurationInterface
      */
     public function setWhitelist(array $whitelist)
     {
-        $this->whiteist = $whitelist;
+        $this->whitelist = $whitelist;
     }
 
     /**
@@ -417,6 +417,6 @@ abstract class ConfigurationAbstract implements ConfigurationInterface
      */
     public function getWhitelist()
     {
-        return (!is_null($this->whiteist)) ? $this->whiteist : array();
+        return (!is_null($this->whitelist)) ? $this->whitelist : array();
     }
 }

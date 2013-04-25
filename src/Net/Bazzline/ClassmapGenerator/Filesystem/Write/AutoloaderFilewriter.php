@@ -122,6 +122,8 @@ if (file_exists('$relativeFilepathForClassmap')) {
 EOC;
         }
         $data .= <<<EOC
+
+
 spl_autoload_register('autoloadFromFilesystem_$uniqueIdentifier');
 EOC;
 

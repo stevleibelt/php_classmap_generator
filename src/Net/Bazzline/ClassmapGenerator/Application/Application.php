@@ -5,6 +5,7 @@ namespace Net\Bazzline\ClassmapGenerator\Application;
 use Net\Bazzline\ClassmapGenerator\Command\ConfigureCommand;
 use Net\Bazzline\ClassmapGenerator\Command\CreateCommand;
 use Net\Bazzline\ClassmapGenerator\Command\ManualCommand;
+use Net\Bazzline\ClassmapGenerator\Configuration\ConfigurationPhpArray;
 use Net\Bazzline\ClassmapGenerator\Validate\ArgumentValidate;
 
 use Symfony\Component\Console\Application as SymfonyApplication;
@@ -15,32 +16,60 @@ use Symfony\Component\Console\Application as SymfonyApplication;
  */
 class Application extends SymfonyApplication
 {
+    /**
+     * @var string
+     *
+     * @author stev leibelt
+     * @since 2013-04-25
+     */
     const CONFIGURATION_FILE_NAME = 'classmap_generator_configuration.php';
-    const NAME = 'classmap generator';
-    const VERSION = '1.1.0.1';
 
     /**
+     * @var string
+     *
+     * @author stev leibelt
+     * @since 2013-04-25
+     */
+    const NAME = 'classmap generator';
+
+    /**
+     * @var string
+     *
+     * @author stev leibelt
+     * @since 2013-04-25
+     */
+    const VERSION = '1.3.0.1';
+
+    /**
+     * @var \Net\Bazzline\ClassmapGenerator\Configuration\ConfigurationInterface
+     *
      * @author stev leibelt
      * @since 2013-02-27
-     * @var array
      */
     private $configuration;
+
     /**
+     * @var string
+     *
      * @author stev leibelt
      * @since 2013-03.04
-     * @var string
      */
     private $userWorkingDirectory;
 
     /**
+     * Creates application class
+     *
+     * @param string $userWorkingDirectory - directory from where application is called
+     *
      * @author stev leibelt
-     * @param array $configuration
      * @since 2013-02-27
      */
     public function __construct($userWorkingDirectory)
     {
         parent::__construct(self::NAME, self::VERSION);
-        $this->configuration = (file_exists(self::CONFIGURATION_FILE_NAME) ? require self::CONFIGURATION_FILE_NAME : array());
+        $this->configuration = (file_exists(self::CONFIGURATION_FILE_NAME)
+            ? ConfigurationPhpArray::createFromSource(require self::CONFIGURATION_FILE_NAME)
+            : new ConfigurationPhpArray());
         $this->userWorkingDirectory = $userWorkingDirectory;
 
         if (date_default_timezone_get() === false) {
@@ -53,9 +82,12 @@ class Application extends SymfonyApplication
     }
 
     /**
-     * @author stev leibelt
-     * @param array $configuration
+     * Factory method for class
+     *
+     * @param string $userWorkingDirectory - directory from where application is called
+     *
      * @return \Net\Bazzline\ClassmapGenerator\Application\Application
+     * @author stev leibelt
      * @since 2013-02-27
      */
     public static function create($userWorkingDirectory)
@@ -67,11 +99,11 @@ class Application extends SymfonyApplication
 
     /**
      * @author stev leibelt
-     * @return array
+     * @return \Net\Bazzline\ClassmapGenerator\Configuration\ConfigurationInterface
      * @since 2013-04-22
      */
     public function getConfiguration()
     {
-        return (isset($this->configuration['net_bazzline'])) ? $this->configuration['net_bazzline'] : $this->configuration;
+        return $this->configuration;
     }
 }

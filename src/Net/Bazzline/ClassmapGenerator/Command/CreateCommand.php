@@ -2,15 +2,16 @@
 
 namespace Net\Bazzline\ClassmapGenerator\Command;
 
+use Net\Bazzline\ClassmapGenerator\Configuration\ConfigurationInterface;
+use Net\Bazzline\ClassmapGenerator\Factory\FilepathIteratorFactory;
+use Net\Bazzline\ClassmapGenerator\Factory\ClassmapFilewriterFactory;
+use Net\Bazzline\ClassmapGenerator\Factory\AutoloaderFilewriterFactory;
 use Net\Bazzline\ClassmapGenerator\Filesystem\Iterate\FilepathIterator;
 use Net\Bazzline\ClassmapGenerator\Filesystem\Write\ClassmapFilewriter;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Net\Bazzline\ClassmapGenerator\Factory\FilepathIteratorFactory;
-use Net\Bazzline\ClassmapGenerator\Factory\ClassmapFilewriterFactory;
-use Net\Bazzline\ClassmapGenerator\Factory\AutoloaderFilewriterFactory;
 
 /**
  * @author stev leibelt
@@ -50,46 +51,41 @@ class CreateCommand extends CommandAbstract
     public function execute(InputInterface $input, OutputInterface $output)
     {
         $configuration = $this->getApplication()->getConfiguration();
-        $classmapWasWritten = false;
+
+        $autoloaderFilepath = realpath($configuration->getFilepathAutoloader()) .
+            DIRECTORY_SEPARATOR . $configuration->getFilenameAutoloader();
         $autoloaderWasWritten = false;
+        $classmapFilepath = realpath($configuration->getFilepathClassmap()) .
+            DIRECTORY_SEPARATOR . $configuration->getFilenameClassmap();
+        $classmapWasWritten = false;
+        $isForced = $input->getOption('force');
+        $onlyCreateClassmapFile = $input->getOption('classmap');
+        $onlyCreateAutoloaderFile = $input->getOption('autoloader');
 
-        if (count($configuration) < 1) {
-            $output->writeln('<error>Configuration is empty or does not exist.</error>');
-            $output->writeln('<error>Try to call "classmap_generator.php configure".</error>');
-        } else {
-            $autoloaderFilepath = realpath($configuration['filepath']['autoloader']) .
-                DIRECTORY_SEPARATOR . $configuration['filename']['autoloader'];
-            $classmapFilepath = realpath($configuration['filepath']['classmap']) .
-                DIRECTORY_SEPARATOR . $configuration['filename']['classmap'];
-            $isForced = $input->getOption('force');
-            $onlyCreateClassmapFile = $input->getOption('classmap');
-            $onlyCreateAutoloaderFile = $input->getOption('autoloader');
+        $filepathIterator = $this->getFilepathIterator($configuration);
+        $classmapFileWriter = $this->getClassmapFileWriter($filepathIterator, $classmapFilepath);
 
-            $filepathIterator = $this->getFilepathIterator($configuration);
-            $classmapFileWriter = $this->getClassmapFileWriter($filepathIterator, $classmapFilepath);
+        if (!$onlyCreateAutoloaderFile) {
+            $classmapWasWritten = $this->writeClassmap($classmapFileWriter, $isForced, $output);
 
-            if (!$onlyCreateAutoloaderFile) {
-                $classmapWasWritten = $this->writeClassmap($classmapFileWriter, $isForced, $output);
-
-                if ($classmapWasWritten) {
-                    $output->writeln('<info>Classmap was written to "' .
-                        $classmapFilepath . '" .</info>');
-                } else {
-                    $output->writeln('<error>Classmap was not written.</error>');
-                }
+            if ($classmapWasWritten) {
+                $output->writeln('<info>Classmap was written to:</info> ' .
+                    $classmapFilepath);
+            } else {
+                $output->writeln('<error>Classmap was not written.</error>');
             }
+        }
 
-            if (!$onlyCreateClassmapFile
-                && $configuration['createAutoloaderFile']) {
-                $autoloaderFileWriter = $this->getAutoloaderFileWriter($autoloaderFilepath, $classmapFilepath);
-                $autoloaderWasWritten = $this->writeAutoloaderFile($autoloaderFileWriter, $isForced, $output);
+        if (!$onlyCreateClassmapFile
+            && $configuration->createAutoloaderFile()) {
+            $autoloaderFileWriter = $this->getAutoloaderFileWriter($autoloaderFilepath, $classmapFilepath);
+            $autoloaderWasWritten = $this->writeAutoloaderFile($autoloaderFileWriter, $isForced, $output);
 
-                if ($autoloaderWasWritten) {
-                    $output->writeln('<info>Autoloader was written to "' .
-                        $autoloaderFilepath . '".</info>');
-                } else {
-                    $output->writeln('<error>Autoloader was not written.</error>');
-                }
+            if ($autoloaderWasWritten) {
+                $output->writeln('<info>Autoloader was written to:</info> ' .
+                    $autoloaderFilepath);
+            } else {
+                $output->writeln('<error>Autoloader was not written.</error>');
             }
         }
     }
@@ -146,17 +142,17 @@ class CreateCommand extends CommandAbstract
 
     /**
      * @author stev leibelt
-     * @param array $configuration
+     * @param \Net\Bazzline\ClassmapGenerator\Configuration\ConfigurationInterface $configuration
      * @return \Net\Bazzline\ClassmapGenerator\Filesystem\Iterate\FilepathIterator
      * @since 2013-04-24
      */
-    private function getFilepathIterator(array $configuration)
+    private function getFilepathIterator(ConfigurationInterface $configuration)
     {
         $filepathIterator = FilepathIteratorFactory::create(
             array(
                 FilepathIteratorFactory::OPTION_BASE_PATH => getcwd(),
-                FilepathIteratorFactory::OPTION_BLACKISTED_DIRECTORIES => $this->generatePaths($configuration['blacklist']),
-                FilepathIteratorFactory::OPTION_WHITELISTED_DIRECTORIES => $this->generatePaths($configuration['whitelist'])
+                FilepathIteratorFactory::OPTION_BLACKISTED_DIRECTORIES => $this->generatePaths($configuration->getBlacklist()),
+                FilepathIteratorFactory::OPTION_WHITELISTED_DIRECTORIES => $this->generatePaths($configuration->getWhitelist())
             )
         );
 
