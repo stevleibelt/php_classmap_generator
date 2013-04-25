@@ -22,6 +22,10 @@ class ManualCommand extends CommandAbstract
         $this
             ->setName('manual')
             ->setDescription('Displays manual.')
+            ->setHelp(
+                'The <info>%command.name%</info> gives you a rough introduction ' . PHP_EOL .
+                    'into available commands for this console application'
+            )
         ;
     }
 
@@ -35,9 +39,9 @@ class ManualCommand extends CommandAbstract
             '<comment>Manual</comment>',
             '==============',
             '<comment>NAME</comment>',
-            '        <info>php - classmap generator for psr-2 based php projects</info>',
+            '        universal php classmap generator (especially for non psr-0 projects)',
             '<comment>SYNOPSIS</comment>',
-            '        <info>index.php [OPTION]</info>',
+            '        <info>net_bazzline_classmap_generator.php command [OPTION]</info>',
             '<comment>DESCRIPTION</comment>',
             '        Creates classmap by iterating over project directories.',
             '',
@@ -46,14 +50,18 @@ class ManualCommand extends CommandAbstract
             '        <info>create</info>',
             '            Creates classmap if no classmap file exists.',
             '        <info>create --force</info>',
+            '        <info>create -f</info>',
             '            Creates classmap even if file exists.',
             '        <info>create --classmap</info>',
+            '        <info>create -c</info>',
             '            Creates only classmap file.',
             '        <info>create --autoloader</info>',
+            '        <info>create -a</info>',
             '            Creates only autoloader file.',
             '        <info>configure</info>',
             '            Create the configuration file.',
-            '        <info>configure --full</info>',
+            '        <info>configure --detail</info>',
+            '        <info>configure -d</info>',
             '            Create a full configuration file (generally not needed).',
             '        <info>manual</info>',
             '            Print this manual.',

@@ -39,7 +39,7 @@ class Application extends SymfonyApplication
      * @author stev leibelt
      * @since 2013-04-25
      */
-    const VERSION = '1.4.1.0';
+    const VERSION = '1.4.2.0';
 
     /**
      * @var \Net\Bazzline\ClassmapGenerator\Configuration\ConfigurationInterface

@@ -5,12 +5,12 @@ php classmap and autoloader generator
 
 Manual
 ======
+Manual
+==============
 NAME
-        php - classmap generator for psr-2 based php projects
-
+        universal php classmap generator (especially for non psr-0 projects)
 SYNOPSIS
-        index.php [OPTION]
-
+        net_bazzline_classmap_generator.php command [OPTION]
 DESCRIPTION
         Creates classmap by iterating over project directories.
 
@@ -19,14 +19,18 @@ DESCRIPTION
         create
             Creates classmap if no classmap file exists.
         create --force
+        create -f
             Creates classmap even if file exists.
         create --classmap
+        create -c
             Creates only classmap file.
         create --autoloader
+        create -a
             Creates only autoloader file.
         configure
             Create the configuration file.
-        configure --full
+        configure --detail
+        configure -d
             Create a full configuration file (generally not needed).
         manual
             Print this manual.
@@ -37,4 +41,4 @@ REPORTING BUGS
         artodeto@arcor.de
 
 SEE ALSO
-        artodeto.bazzline.net
+        artodeto.bazzline.ne
