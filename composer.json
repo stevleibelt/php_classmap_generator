@@ -23,6 +23,12 @@
         "mikey179/vfsStream": "dev-master",
 	"mockery/mockery": "dev-master"
     },
+    "bin": [
+        "bin/net_bazzline_classmap_generator.php"
+    ],
+    "config": {
+        "bin-dir": "bin"
+    },
     "autoload": {
         "psr-0": {
             "Net\\Bazzline\\ClassmapGenerator": "src/",

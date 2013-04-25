@@ -62,10 +62,10 @@ class CreateCommand extends CommandAbstract
         $onlyCreateClassmapFile = $input->getOption('classmap');
         $onlyCreateAutoloaderFile = $input->getOption('autoloader');
 
-        $filepathIterator = $this->getFilepathIterator($configuration);
-        $classmapFileWriter = $this->getClassmapFileWriter($filepathIterator, $classmapFilepath);
-
         if (!$onlyCreateAutoloaderFile) {
+            $output->writeln('<comment>Generating and writing classmap file.</comment> ');
+            $filepathIterator = $this->getFilepathIterator($configuration);
+            $classmapFileWriter = $this->getClassmapFileWriter($filepathIterator, $classmapFilepath);
             $classmapWasWritten = $this->writeClassmap($classmapFileWriter, $isForced, $output);
 
             if ($classmapWasWritten) {
@@ -78,6 +78,7 @@ class CreateCommand extends CommandAbstract
 
         if (!$onlyCreateClassmapFile
             && $configuration->createAutoloaderFile()) {
+            $output->writeln('<comment>Generating and writing autoloader file.</comment> ');
             $autoloaderFileWriter = $this->getAutoloaderFileWriter($autoloaderFilepath, $classmapFilepath);
             $autoloaderWasWritten = $this->writeAutoloaderFile($autoloaderFileWriter, $isForced, $output);
 
