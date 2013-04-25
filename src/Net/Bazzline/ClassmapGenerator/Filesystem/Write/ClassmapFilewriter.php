@@ -38,8 +38,15 @@ EOC;
         $filedata = '';
 
         if (count($this->getFiledata()) > 0) {
-            foreach ($this->getFiledata() as $fileName => $className) {
-                $filedata .= PHP_EOL . '    \'' . $fileName . '\' => \'' . $className . '\',';
+            $relativeClassmapPath = $this->getFilesystem()
+                ->getRelativeCurrentWorkingDirectoryPath(
+                    $this
+                        ->getConfiguration()
+                        ->getFilepathClassmap()
+                );
+
+            foreach ($this->getFiledata() as $filename => $classname) {
+                $filedata .= PHP_EOL . '    \'' . $filename . '\' => \'' . $relativeClassmapPath . $classname . '\',';
             }
 
             if (strlen($filedata) > 0) {
