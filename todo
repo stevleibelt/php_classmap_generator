@@ -1,3 +1,9 @@
+bugfix
+======
+- autloader filename and classmap filename are mixed up
+- classmap and autoloader uses paths relative to generator call. If you are using the ability to store the classmap (and|or) the autoloader file into different paths, the paths in the classmap (or|and) in the autoloader have to be adapted relative also.
+-> create a general Filesystemclass that provides this kinde of calculation
+
 command
 =======
 
@@ -5,12 +11,20 @@ create
 ------
 add progressbar for creation (if possible)
 use http://symfony.com/doc/current/components/console/helpers/progresshelper.html
-->refactore FilepathIterator::iterate()
+->refactor FilepathIterator::iterate()
+	- first iterate over whitelisted directories and store filepaths into array/stack
+	- count stack to get the number of items for the progressbar
+	- provide stack to fileanalyzer and iterate each file with fileanalyzer to update progressbar
 
 filesystem
 ==========
 evaluate if it is usefull to use symfony componten filesystem
 -> migrate filesystem
+
+general
+======
+register autoloader/generated classmap into composer autoloader if possible
+write/finish wikipage for better documentation
 
 unittest
 ========
