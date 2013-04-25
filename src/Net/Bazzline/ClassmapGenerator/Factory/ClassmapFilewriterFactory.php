@@ -1,52 +1,68 @@
 <?php
+/**
+ * @author stev leibelt
+ * @since 2013-03-03
+ */
 
 namespace Net\Bazzline\ClassmapGenerator\Factory;
 
 use Net\Bazzline\ClassmapGenerator\Filesystem\Write\ClassmapFilewriter;
 use InvalidArgumentException;
 
-/**
- * @author stev leibelt
- * @since 2013-03-03
- */
 class ClassmapFilewriterFactory implements FactoryInterface
 {
-    const OPTION_FILE_PATH = 'filePath';
-    const OPTION_FILE_DATA = 'fileData';
+    /**
+     * @var string
+     * @author stev leibelt
+     * @since 2013-04-25
+     */
+    const ARGUMENT_FILE_PATH = 'filePath';
 
     /**
+     * @var string
      * @author stev leibelt
-     * @param array $options
+     * @since 2013-04-25
+     */
+    const ARGUMENT_FILE_DATA = 'fileData';
+
+    /**
+     * @param array $arguments - collection of arguments
+     *
+     * @return \Net\Bazzline\ClassmapGenerator\Filesystem\Write\ClassmapFilewriter
+     * @author stev leibelt
      * @since 2013-03-03
      * @throws \InvalidArgumentException
      */
-    public static function create(array $options) 
+    public static function create(array $arguments)
     {
-        self::validateOptions($options);
+        self::validateArguments($arguments);
 
         $classmapFileWriter = new ClassmapFilewriter();
-        $classmapFileWriter->setFilePath($options[self::OPTION_FILE_PATH]);
-        $classmapFileWriter->setFiledata($options[self::OPTION_FILE_DATA]);
+        $classmapFileWriter->setFilePath($arguments[self::ARGUMENT_FILE_PATH]);
+        $classmapFileWriter->setFiledata($arguments[self::ARGUMENT_FILE_DATA]);
 
         return $classmapFileWriter;
     }
 
     /**
+     * Validates the arguments
+     *
+     * @param array $arguments - collection of given arguments
+     *
      * @author stev leibelt
-     * @param array $options
      * @since 2013-03-03
      * @throws InvalidArgumentException
      */
-    private static function validateOptions(array $options)
+    private static function validateArguments(array $arguments)
     {
-        $mandatoryOptions = array(
-            self::OPTION_FILE_PATH,
-            self::OPTION_FILE_DATA
+        $mandatoryArguments = array(
+            self::ARGUMENT_FILE_PATH,
+            self::ARGUMENT_FILE_DATA
         );
 
-        foreach ($mandatoryOptions as $mandatoryOption) {
-            if (!isset($options[$mandatoryOption])) {
-                $message = 'Option "' . $mandatoryOption . '" is mandatory.';
+        foreach ($mandatoryArguments as $mandatoryArgument) {
+            if (!isset($arguments[$mandatoryArgument])) {
+                $message = 'Option "' . $mandatoryArgument . '" is mandatory.';
 
                 throw new InvalidArgumentException($message);
             }
