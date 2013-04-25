@@ -1,11 +1,11 @@
 <?php
-
-namespace Net\Bazzline\ClassmapGenerator\Filesystem\Write;
-
 /**
  * @author stev leibelt
  * @since 2013-02-28
  */
+
+namespace Net\Bazzline\ClassmapGenerator\Filesystem\Write;
+
 class ClassmapFilewriter extends FilewriterAbstract
 {
     /**

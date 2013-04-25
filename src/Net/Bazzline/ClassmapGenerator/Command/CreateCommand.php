@@ -190,10 +190,11 @@ class CreateCommand extends CommandAbstract
     {
         $classmapFileWriter = ClassmapFilewriterFactory::create(
             array(
-                ClassmapFilewriterFactory::OPTION_FILE_DATA => $filepathIterator->iterate(),
-                ClassmapFilewriterFactory::OPTION_FILE_PATH => $classmapFilepath
+                ClassmapFilewriterFactory::ARGUMENT_FILE_DATA => $filepathIterator->iterate(),
+                ClassmapFilewriterFactory::ARGUMENT_FILE_PATH => $classmapFilepath
             )
         );
+        $classmapFileWriter->setFilesystem($this->getApplication()->getFilesystem());
 
         return $classmapFileWriter;
     }

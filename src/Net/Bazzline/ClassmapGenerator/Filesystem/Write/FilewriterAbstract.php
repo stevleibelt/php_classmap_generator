@@ -1,30 +1,38 @@
 <?php
-
-namespace Net\Bazzline\ClassmapGenerator\Filesystem\Write;
-
 /**
  * @author stev leibelt
  * @since 2013-03-03
  */
-abstract class FilewriterAbstract implements WriterInterface
+
+namespace Net\Bazzline\ClassmapGenerator\Filesystem\Write;
+
+use Net\Bazzline\ClassmapGenerator\Filesystem\FilesystemAwareInterface;
+use Net\Bazzline\ClassmapGenerator\Filesystem\Filesystem;
+
+abstract class FilewriterAbstract implements WriterInterface, FilesystemAwareInterface
 {
     /**
+     * @var array
      * @author stev leibelt
      * @since 2013-03-03
-     * @var array
      */
     private $filedata;
 
     /**
+     * @var string
      * @author stev leibelt
      * @since 2013-03-03
-     * @var string
      */
     private $filepath;
 
+    private $filesystem;
+
     /**
-     * @author stev leibelt
+     * Setter for file path
+     *
      * @param string $filepath
+     *
+     * @author stev leibelt
      * @since 2013-03-03
      */
     public function setFilePath($filepath)
@@ -33,8 +41,11 @@ abstract class FilewriterAbstract implements WriterInterface
     }
 
     /**
-     * @author stev leibelt
+     * Setter for file data
+     *
      * @param array $filedata
+     *
+     * @author stev leibelt
      * @since 2013-03-03
      */
     public function setFiledata(array $filedata)
@@ -43,9 +54,11 @@ abstract class FilewriterAbstract implements WriterInterface
     }
 
     /**
+     * Validator if file exists
+     *
+     * @since 2013-03-03
      * @author stev leibelt
      * @return boolean
-     * @since 2013-03-03
      */
     public function fileExists()
     {
@@ -53,10 +66,12 @@ abstract class FilewriterAbstract implements WriterInterface
     }
 
     /**
-     * @author stev leibelt
+     * Writes content, even if file exists
+     *
      * @return boolean
-     * @since 2013-03-03
      * @throws \RuntimeException
+     * @author stev leibelt
+     * @since 2013-03-03
      */
     public function overwrite()
     {
@@ -68,8 +83,35 @@ abstract class FilewriterAbstract implements WriterInterface
     }
 
     /**
+     * Getter for filesystem
+     *
+     * @return \Net\Bazzline\ClassmapGenerator\Filesystem\Filesystem $filesystem
      * @author stev leibelt
+     * @since 2013-04-25
+     */
+    public function getFilesystem()
+    {
+        return $this->filesystem;
+    }
+
+    /**
+     * Setter for filesystem
+     *
+     * @param \Net\Bazzline\ClassmapGenerator\Filesystem\Filesystem $filesystem
+     *
+     * @author stev leibelt
+     * @since 2013-04-25
+     */
+    public function setFilesystem(Filesystem $filesystem)
+    {
+        $this->filesystem = $filesystem;
+    }
+
+    /**
+     * Getter for file path
+     *
      * @return string
+     * @author stev leibelt
      * @since 2013-03-03
      */
     protected function getFilepath()
@@ -78,8 +120,10 @@ abstract class FilewriterAbstract implements WriterInterface
     }
 
     /**
-     * @author stev leibelt
+     * Getter for file data
+     *
      * @return array
+     * @author stev leibelt
      * @since 2013-03-03
      */
     protected function getFiledata()
