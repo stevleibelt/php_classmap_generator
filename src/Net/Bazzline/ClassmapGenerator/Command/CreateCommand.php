@@ -195,6 +195,7 @@ class CreateCommand extends CommandAbstract
             )
         );
         $classmapFileWriter->setFilesystem($this->getApplication()->getFilesystem());
+        $classmapFileWriter->setConfiguration($this->getApplication()->getConfiguration());
 
         return $classmapFileWriter;
     }
