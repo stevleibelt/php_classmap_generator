@@ -1,10 +1,6 @@
 command
 =======
 
-configure
----------
-only ask for autoloadername if autoloader should be written.
-
 create
 ------
 add progressbar for creation (if possible)
