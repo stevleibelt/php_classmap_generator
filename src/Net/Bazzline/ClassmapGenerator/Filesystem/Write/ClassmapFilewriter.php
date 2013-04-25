@@ -29,6 +29,7 @@ class ClassmapFilewriter extends FilewriterAbstract
 
 /**
 * Created with Net\Bazzline\ClassmapGenerator
+*
 * @author stev leibelt
 * @since $date
 */

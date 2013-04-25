@@ -175,6 +175,8 @@ class CreateCommand extends CommandAbstract
                 AutoloaderFilewriterFactory::OPTION_FILE_PATH_CLASSMAP => $classmapFilepath
             )
         );
+        $autoloaderFilewriter->setFilesystem($this->getApplication()->getFilesystem());
+        $autoloaderFilewriter->setConfiguration($this->getApplication()->getConfiguration());
 
         return $autoloaderFilewriter;
     }

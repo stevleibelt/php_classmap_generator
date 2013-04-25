@@ -47,6 +47,8 @@ class AutoloaderFilewriter extends FilewriterAbstract
             return false;
         }
 
+        $classmapFilename = $this->getConfiguration()->getFilenameClassmap();
+
         $uniqueIdentifier = sha1(__CLASS__ . microtime());
         $date = date('Y-m-d H:i:s');
         $data = <<<EOC
@@ -58,22 +60,25 @@ class AutoloaderFilewriter extends FilewriterAbstract
  */
 
 /**
- * @author stev leibelt
+ * Global function registering the usage of "$classmapFilename" classmap.
+ *
  * @param string \$className
+ *
+ * @author stev leibelt
  * @since 2013-02-27
  */
-function autoloadFromFilesystem_$uniqueIdentifier(\$className)
+function autoloadFromFilesystem_$uniqueIdentifier(\$classname)
 {
-    \$fileName = str_replace('\\\\', DIRECTORY_SEPARATOR, \$className) . '.php';
+    \$fileName = str_replace('\\\\', DIRECTORY_SEPARATOR, \$classname) . '.php';
     \$includePaths = array(
         realpath(__DIR__ . DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR
     );
 
     foreach (\$includePaths as \$includePath) {
-        \$filePath = realpath(\$includePath . DIRECTORY_SEPARATOR . \$fileName);
+        \$filepath = realpath(\$includePath . DIRECTORY_SEPARATOR . \$filename);
 
-        if (file_exists(\$filePath)) {
-            require_once \$filePath;
+        if (file_exists(\$filepath)) {
+            require_once \$filepath;
 
             break;
         }
@@ -81,32 +86,55 @@ function autoloadFromFilesystem_$uniqueIdentifier(\$className)
 }
 EOC;
 
-        $autoloaderFullFilepathAsArray = explode(DIRECTORY_SEPARATOR, $this->getFilepath());
-        $classmapFullFilepathAsArray = explode(DIRECTORY_SEPARATOR, $this->getFilePathClassmap());
+        $relativeAutoloaderFilepath = $this
+            ->getFilesystem()
+            ->getRelativePathToCurrentWorkingDirectory(
+                $this
+                    ->getConfiguration()
+                    ->getFilepathAutoloader()
+            );
+        $relativeClassmapFilepath = $this
+            ->getFilesystem()
+            ->getRelativePathToCurrentWorkingDirectory(
+                $this
+                    ->getConfiguration()
+                    ->getFilepathClassmap()
+            );
+        $relativeClassmapFilepathToAutoloaderFilepath = $this
+            ->getFilesystem()
+            ->getRelativePath(
+                $relativeAutoloaderFilepath,
+                $relativeClassmapFilepath
+            ) .
+            DIRECTORY_SEPARATOR .
+            $this
+                ->getConfiguration()
+                ->getFilenameClassmap();
+         $relativeClassmapFilepathToCurrentWorkingDirectoryPath = $this
+            ->getFilesystem()
+            ->getRelativePathToCurrentWorkingDirectory(
+                $relativeClassmapFilepath
+            ) .
+            DIRECTORY_SEPARATOR .
+            $this
+                ->getConfiguration()
+                ->getFilenameClassmap();
 
-        $fullFilepathAsArray = array_intersect($autoloaderFullFilepathAsArray, $classmapFullFilepathAsArray);
-        $autoaderRelativeFilepathAsArray = array_diff($autoloaderFullFilepathAsArray, $classmapFullFilepathAsArray);
-        $classmapRelativeFilepathAsArray = array_diff($classmapFullFilepathAsArray, $autoloaderFullFilepathAsArray);
-
-        $numberOfSubdirectoriesFromAutoloaderFilepath = count($autoaderRelativeFilepathAsArray) - 1;    //-1 because last entry is autoloader filename
-
-        if (file_exists($this->getFilePathClassmap())) {
-            $startPositionOfFilename = strrpos($this->getFilePathClassmap(), DIRECTORY_SEPARATOR)
-                + strlen(DIRECTORY_SEPARATOR);
-            $fileNameClassmap = substr($this->getFilePathClassmap(), $startPositionOfFilename);
-            $relativeFilepathForClassmap = str_repeat('../', $numberOfSubdirectoriesFromAutoloaderFilepath) .
-                implode(DIRECTORY_SEPARATOR, $classmapRelativeFilepathAsArray);
+        if (file_exists($relativeClassmapFilepathToCurrentWorkingDirectoryPath)) {
             $data .= <<<EOC
 
 
 /**
- * @author stev leibelt
+ * Global function providing a fallback mechanism
+ *
  * @param string \$className
+ *
+ * @author stev leibelt
  * @since 2013-02-28
  */
 function autoloadFromFilesystemWithClassmap_$uniqueIdentifier(\$classname)
 {
-    \$classnameToFilepath = require_once '$relativeFilepathForClassmap';
+    \$classnameToFilepath = require_once '$relativeClassmapFilepathToAutoloaderFilepath';
 
     if (isset(\$classnameToFilepath[\$classname])) {
         require_once \$classnameToFilepath[\$classname];
@@ -115,14 +143,13 @@ function autoloadFromFilesystemWithClassmap_$uniqueIdentifier(\$classname)
     }
 }
 
-if (file_exists('$relativeFilepathForClassmap')) {
+if (file_exists('$relativeClassmapFilepathToAutoloaderFilepath')) {
     spl_autoload_register('autoloadFromFilesystemWithClassmap_$uniqueIdentifier');
 }
 
 EOC;
         }
         $data .= <<<EOC
-
 
 spl_autoload_register('autoloadFromFilesystem_$uniqueIdentifier');
 EOC;
