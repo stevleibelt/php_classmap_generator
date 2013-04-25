@@ -246,7 +246,7 @@ abstract class ConfigurationAbstract implements ConfigurationInterface
         }
 
 
-        $this->filenameAutoloader = ($this->stringEndsWith($filename, '.php')
+        $this->filenameAutoloader = ($this->stringEndsWith($filename, '.php'))
             ? $filename : $filename . '.php';
     }
 
@@ -282,7 +282,7 @@ abstract class ConfigurationAbstract implements ConfigurationInterface
             );
         }
 
-        $this->filenameClassmap = ($this->stringEndsWith($filename, '.php')
+        $this->filenameClassmap = ($this->stringEndsWith($filename, '.php'))
             ? $filename : $filename . '.php';
     }
 
