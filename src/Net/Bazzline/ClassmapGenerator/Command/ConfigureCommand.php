@@ -191,14 +191,14 @@ class ConfigureCommand extends CommandAbstract
             $this
                 ->configuration
                 ->setFilenameAutoloader(
-                    $this->askAndValidate($output, $questionClassmapFilename, $validator, false, $defaultAutoloaderFilename
+                    $this->askAndValidate($output, $questionAutoloaderFilename, $validator, false, $defaultAutoloaderFilename
                     )
                 );
         }
         $this
             ->configuration
             ->setFilenameClassmap(
-                $this->askAndValidate($output, $questionAutoloaderFilename, $validator, false, $defaultClassmapFilename)
+                $this->askAndValidate($output, $questionClassmapFilename, $validator, false, $defaultClassmapFilename)
             );
     }
 
@@ -225,11 +225,13 @@ class ConfigureCommand extends CommandAbstract
                 return $answer;
             };
 
-        $this
-            ->configuration
-            ->setFilepathAutoloader(
-                $this->askAndValidate($output, $questionAutoloaderFilepath, $validator, false, $defaultPath)
-            );
+        if ($this->configuration->createAutoloaderFile()) {
+            $this
+                ->configuration
+                ->setFilepathAutoloader(
+                    $this->askAndValidate($output, $questionAutoloaderFilepath, $validator, false, $defaultPath)
+                );
+        }
         $this
             ->configuration
             ->setFilepathClassmap(

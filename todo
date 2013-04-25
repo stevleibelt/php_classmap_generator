@@ -1,6 +1,5 @@
 bugfix
 ======
-- autloader filename and classmap filename are mixed up
 - classmap and autoloader uses paths relative to generator call. If you are using the ability to store the classmap (and|or) the autoloader file into different paths, the paths in the classmap (or|and) in the autoloader have to be adapted relative also.
 -> create a general Filesystemclass that provides this kinde of calculation
 
