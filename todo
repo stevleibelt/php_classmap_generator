@@ -16,6 +16,7 @@ general
 ======
 register autoloader/generated classmap into composer autoloader if possible
 write/finish wikipage for better documentation
+create writer for "phar" classmap (used by phar archive) -> https://github.com/c9s/ClassMap
 
 unittest
 ========
