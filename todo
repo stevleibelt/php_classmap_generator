@@ -9,6 +9,8 @@ use http://symfony.com/doc/current/components/console/helpers/progresshelper.htm
 	- first iterate over whitelisted directories and store filepaths into array/stack
 	- count stack to get the number of items for the progressbar
 	- provide stack to fileanalyzer and iterate each file with fileanalyzer to update progressbar
+implement save way to overwrite only the configuration in the array key "net_bazzline"
+validate if a single file for classmap generation can be added and used. If not, add a validation like "is_file" to each path and if returned false, add a "*"
 
 general
 ======
