@@ -3,20 +3,21 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "65299dee4b47094989cdb8fe46177a03",
+    "hash": "94d0df1fc7025c3603a44b0e79daac0e",
     "packages": [
         {
             "name": "net_bazzline_component/filesystem",
             "version": "dev-master",
+            "target-dir": "Net/Bazzline/Component/Filesystem",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stevleibelt/php_component_filesystem.git",
-                "reference": "5bec8c282ab42ba77c18b491b4887facc1f85b0f"
+                "reference": "ce247e2385ff980db4dc715e881a9bf13e513c9f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stevleibelt/php_component_filesystem/zipball/5bec8c282ab42ba77c18b491b4887facc1f85b0f",
-                "reference": "5bec8c282ab42ba77c18b491b4887facc1f85b0f",
+                "url": "https://api.github.com/repos/stevleibelt/php_component_filesystem/zipball/ce247e2385ff980db4dc715e881a9bf13e513c9f",
+                "reference": "ce247e2385ff980db4dc715e881a9bf13e513c9f",
                 "shasum": ""
             },
             "require": {
@@ -31,7 +32,7 @@
             "type": "library",
             "autoload": {
                 "psr-0": {
-                    "Net\\Bazzline\\Component\\Filesystem\\": "src/"
+                    "Net\\Bazzline\\Component\\Filesystem\\": ""
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -48,7 +49,7 @@
             ],
             "description": "Net Bazzline Filesystem Component",
             "homepage": "http://www.bazzline.net",
-            "time": "2013-05-09 16:50:58"
+            "time": "2013-05-09 21:55:08"
         },
         {
             "name": "symfony/console",

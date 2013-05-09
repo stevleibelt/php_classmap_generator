@@ -4,8 +4,9 @@ function netBazzlineClassmapGeneratorBasicAutoloader($classname)
 {
     $namespace = 'Net\\Bazzline\\ClassmapGenerator\\';
     //$lengthOfNamespace = strlen($namespace);
-    $lengthOfNamespace = 31;
-    $expectedNamespace = substr($classname, 0, $lengthOfNamespace);
+    //$lengthOfNamespace = 31;
+    //$expectedNamespace = substr($classname, 0, $lengthOfNamespace);
+    $expectedNamespace = substr($classname, 0, 31);
 
     $isSupportedClassnameByNamespace = ($namespace == $expectedNamespace);
 

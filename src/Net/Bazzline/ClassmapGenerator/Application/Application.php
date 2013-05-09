@@ -6,9 +6,9 @@ use Net\Bazzline\ClassmapGenerator\Command\ConfigureCommand;
 use Net\Bazzline\ClassmapGenerator\Command\CreateCommand;
 use Net\Bazzline\ClassmapGenerator\Command\ManualCommand;
 use Net\Bazzline\ClassmapGenerator\Configuration\ConfigurationPhpArray;
-use Net\Bazzline\ClassmapGenerator\Filesystem\Filesystem;
 use Net\Bazzline\ClassmapGenerator\Validate\ArgumentValidate;
 
+use Net\Bazzline\Component\Filesystem\Filesystem;
 use Symfony\Component\Console\Application as SymfonyApplication;
 
 /**
