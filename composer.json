@@ -4,7 +4,7 @@
     "description": "php classmap and autoloader generator for psr-0 and previous php files - it should find all classes in every php file",
     "keywords": ["php", "bazzline", "classmap", "autoloader", "generator"],
     "homepage": "https://github.com/stevleibelt/php_classmap_generator",
-    "license": "MIT",
+    "license": "GPLv3",
     "authors": [
         {
             "name": "stev leibelt",
@@ -16,7 +16,8 @@
     "minimum-stability": "dev",
     "require": {
         "php": ">=5.3.3",
-        "symfony/console": "2.2.*@dev"
+        "symfony/console": "2.2.*@dev",
+        "net_bazzline_component/filesystem": "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit": "3.7.*",

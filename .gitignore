@@ -1,3 +1,5 @@
 nbproject
 classmap_generator_configuration.php
 .idea
+vendor/
+composer.lock
