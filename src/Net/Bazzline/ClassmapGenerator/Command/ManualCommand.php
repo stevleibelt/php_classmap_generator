@@ -69,7 +69,7 @@ class ManualCommand extends CommandAbstract
             '        Written by Stev Leibelt',
             '',
             '<comment>REPORTING BUGS</comment>',
-            '        artodeto@arcor.de',
+            '        artodeto@bazzline.net',
             '',
             '<comment>SEE ALSO</comment>',
             '        artodeto.bazzline.net'
