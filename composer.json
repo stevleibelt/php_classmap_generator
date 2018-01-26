@@ -4,7 +4,7 @@
     "description": "php classmap and autoloader generator for psr-0 and previous php files - it should find all classes in every php file",
     "keywords": ["php", "bazzline", "classmap", "autoloader", "generator"],
     "homepage": "https://github.com/stevleibelt/php_classmap_generator",
-    "license": "LGPLv3",
+    "license": "LGPL-3.0-or-later",
     "authors": [
         {
             "name": "stev leibelt",
