@@ -1,3 +1,7 @@
+# PLEASE NOTE, THIS PROJECT IS NO LONGER BEING MAINTAINED
+
+I still like the idea but there is currently no use case to develop it anymore.
+
 # Classmap generator for PHP
 
 php classmap and autoloader generator
